@@ -54,14 +54,14 @@
         @auth
             @if(auth()->user()->role === 'mahasiswa')
                 @php
-                    $sudahPinjam = false; // Logic untuk cek apakah sudah pinjam barang ini
+                    $sudahPinjam = false; // nanti bisa diisi logic cek peminjaman
                 @endphp
 
                 @if(!$sudahPinjam)
                     <div class="card">
                         <div class="card-body">
                             <h5 class="card-title">Pinjam Barang</h5>
-                            <a href="{{ route('peminjaman.create', ['barang_id' => $barang->id]) }}" class="btn btn-success btn-lg w-100">
+                            <a href="{{ route('peminjaman.create', ['barang_id' => $barang->id ?? $barang->id_barang]) }}" class="btn btn-success btn-lg w-100">
                                 Pinjam Sekarang
                             </a>
                         </div>

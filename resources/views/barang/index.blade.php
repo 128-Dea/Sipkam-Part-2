@@ -43,12 +43,12 @@
                             <td>{{ ucfirst($item->status ?? 'tersedia') }}</td>
                             <td>Rp {{ number_format($item->harga ?? 0,0,',','.') }}</td>
                             <td class="text-end">
-                                <a href="{{ route('barang.edit', $item->id_barang) }}" class="btn btn-sm btn-outline-primary">Edit</a>
+                                <a href="{{ route('barang.edit', $item->id_barang ?? $item->id) }}" class="btn btn-sm btn-outline-primary">Edit</a>
                             </td>
                         </tr>
                     @empty
                         <tr>
-                            <td colspan="6" class="text-center text-muted">Belum ada barang.</td>
+                            <td colspan="7" class="text-center text-muted">Belum ada barang.</td>
                         </tr>
                     @endforelse
                 </tbody>
@@ -58,7 +58,7 @@
 @else
     <div class="row">
         <div class="col-12">
-            <h1 class="mb-4">Daftar Barang</h1>
+            <h1 class="mb-4">Daftar Barang Tersedia</h1>
 
             <div class="row">
                 @forelse($barang ?? $barangs ?? [] as $item)

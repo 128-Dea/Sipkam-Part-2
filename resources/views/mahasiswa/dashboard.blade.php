@@ -195,3 +195,30 @@
     </div>
 </div>
 @endsection
+
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    function updateTime() {
+        const now = new Date();
+        const options = {
+            weekday: 'long',
+            year: 'numeric',
+            month: 'long',
+            day: 'numeric'
+        };
+
+        document.getElementById('current-date').textContent = now.toLocaleDateString('id-ID', options);
+        document.getElementById('current-time').textContent = now.toLocaleTimeString('id-ID', {
+            hour12: false,
+            hour: '2-digit',
+            minute: '2-digit'
+        });
+    }
+
+    // Update time immediately
+    updateTime();
+
+    // Update time every second
+    setInterval(updateTime, 1000);
+});
+</script>

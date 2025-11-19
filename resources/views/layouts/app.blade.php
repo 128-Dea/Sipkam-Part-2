@@ -51,17 +51,17 @@
             top: 0;
             left: 0;
             height: 100vh;
-            width: 280px;
+            width: 80px;
             background: linear-gradient(135deg, var(--primary-color) 0%, var(--primary-dark) 100%);
             color: white;
             z-index: 1000;
-            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            transition: width 0.3s cubic-bezier(0.4, 0, 0.2, 1);
             box-shadow: var(--shadow-lg);
             backdrop-filter: blur(10px);
         }
 
-        .sidebar-modern.collapsed {
-            width: 80px;
+        .sidebar-modern:hover {
+            width: 280px;
         }
 
         .sidebar-header {
@@ -81,6 +81,14 @@
             color: #e0e7ff;
         }
 
+        .sidebar-logo .logo-text {
+            display: none;
+        }
+
+        .sidebar-modern:hover .sidebar-logo .logo-text {
+            display: block;
+        }
+
         .sidebar-logo .logo-text h5 {
             margin: 0;
             font-weight: 700;
@@ -93,8 +101,18 @@
             font-size: 0.75rem;
         }
 
+        .sidebar-modern.collapsed .sidebar-logo .logo-text {
+            display: none;
+        }
+
+        .sidebar-modern.collapsed:hover .sidebar-logo .logo-text {
+            display: block;
+        }
+
         .sidebar-nav {
             padding: 1rem 0;
+            max-height: calc(100vh - 120px);
+            overflow-y: auto;
         }
 
         .sidebar-nav .nav-item {
@@ -150,23 +168,23 @@
         }
 
         .sidebar-nav .nav-link span {
-            transition: opacity 0.3s ease;
+            display: none;
+            white-space: nowrap;
         }
 
-        .sidebar-modern.collapsed .sidebar-nav .nav-link span {
-            opacity: 0;
-            visibility: hidden;
+        .sidebar-modern:hover .sidebar-nav .nav-link span {
+            display: inline;
         }
 
         /* Main Content */
         .main-content-modern {
-            margin-left: 280px;
+            margin-left: 80px;
             transition: margin-left 0.3s cubic-bezier(0.4, 0, 0.2, 1);
             min-height: 100vh;
         }
 
-        .main-content-modern.expanded {
-            margin-left: 80px;
+        .sidebar-modern:hover ~ .main-content-modern {
+            margin-left: 280px;
         }
 
         /* Top Navigation */
@@ -529,7 +547,7 @@
 <body>
     @if(auth()->check() && auth()->user()->role === 'petugas')
         <!-- Modern Sidebar untuk Petugas -->
-        <nav class="sidebar-modern" id="sidebar">
+        <nav class="sidebar-modern collapsed" id="sidebar">
             <div class="sidebar-header">
                 <div class="sidebar-logo">
                     <i class="fas fa-graduation-cap"></i>
@@ -686,48 +704,91 @@
             </main>
         </div>
     @else
-        <!-- Modern Layout untuk Mahasiswa -->
-        <nav class="navbar navbar-expand-lg navbar-light bg-white shadow-sm border-bottom">
-            <div class="container">
-                <a class="navbar-brand fw-bold text-primary" href="{{ route('mahasiswa.dashboard') }}">
-                    <i class="fas fa-graduation-cap me-2"></i>
-                    SIPKAM
-                </a>
+        <!-- Modern Sidebar untuk Mahasiswa -->
+        <nav class="sidebar-modern" id="sidebar-mahasiswa">
+            <div class="sidebar-header">
+                <div class="sidebar-logo">
+                    <i class="fas fa-graduation-cap"></i>
+                    <div class="logo-text">
+                        <h5>SIPKAM</h5>
+                    </div>
+                </div>
+            </div>
 
-                <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
-                    <span class="navbar-toggler-icon"></span>
-                </button>
+            <div class="sidebar-nav">
+                <ul class="nav flex-column">
+                    <li class="nav-item">
+                        <a class="nav-link {{ request()->routeIs('mahasiswa.dashboard') ? 'active' : '' }}" href="{{ route('mahasiswa.dashboard') }}">
+                            <i class="fas fa-tachometer-alt"></i>
+                            <span>Dashboard</span>
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link {{ request()->routeIs('barang.*') ? 'active' : '' }}" href="{{ route('barang.index') }}">
+                            <i class="fas fa-box"></i>
+                            <span>Barang</span>
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link {{ request()->routeIs('peminjaman.*') ? 'active' : '' }}" href="{{ route('peminjaman.index') }}">
+                            <i class="fas fa-hand-holding"></i>
+                            <span>Peminjaman</span>
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link {{ request()->routeIs('keluhan.*') ? 'active' : '' }}" href="{{ route('keluhan.index') }}">
+                            <i class="fas fa-exclamation-triangle"></i>
+                            <span>Keluhan</span>
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link {{ request()->routeIs('barang.*') ? 'active' : '' }}" href="{{ route('barang.index') }}">
+                            <i class="fas fa-box"></i>
+                            <span>Barang</span>
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link {{ request()->routeIs('riwayat.*') ? 'active' : '' }}" href="{{ route('riwayat.index') }}">
+                            <i class="fas fa-history"></i>
+                            <span>Riwayat</span>
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="#">
+                            <i class="fas fa-user"></i>
+                            <span>Profile</span>
+                        </a>
+                    </li>
+                </ul>
+            </div>
+        </nav>
 
-                <div class="collapse navbar-collapse" id="navbarNav">
-                    <ul class="navbar-nav me-auto">
-                        <li class="nav-item">
-                            <a class="nav-link {{ request()->routeIs('mahasiswa.dashboard') ? 'active' : '' }}" href="{{ route('mahasiswa.dashboard') }}">
-                                <i class="fas fa-home me-1"></i>Dashboard
-                            </a>
-                        </li>
-                        <li class="nav-item">
-                            <a class="nav-link {{ request()->routeIs('peminjaman.*') ? 'active' : '' }}" href="{{ route('peminjaman.index') }}">
-                                <i class="fas fa-hand-holding me-1"></i>Peminjaman
-                            </a>
-                        </li>
-                        <li class="nav-item">
-                            <a class="nav-link {{ request()->routeIs('keluhan.*') ? 'active' : '' }}" href="{{ route('keluhan.index') }}">
-                                <i class="fas fa-exclamation-triangle me-1"></i>Keluhan
-                            </a>
-                        </li>
-                        <li class="nav-item">
-                            <a class="nav-link {{ request()->routeIs('riwayat.*') ? 'active' : '' }}" href="{{ route('riwayat.index') }}">
-                                <i class="fas fa-history me-1"></i>Riwayat
-                            </a>
-                        </li>
-                    </ul>
+        <!-- Main Content Wrapper untuk Mahasiswa -->
+        <div class="main-content-modern" id="main-content-mahasiswa">
+            <!-- Top Navigation Minimal -->
+            <nav class="top-nav">
+                <div class="d-flex justify-content-between align-items-center w-100">
+                    <div class="d-flex align-items-center">
+                        <button class="btn btn-link text-decoration-none me-3 d-md-none" id="sidebar-toggle-mahasiswa">
+                            <i class="fas fa-bars fa-lg"></i>
+                        </button>
+                        <button class="btn btn-link text-decoration-none me-3" onclick="history.back()">
+                            <i class="fas fa-arrow-left fa-lg"></i>
+                        </button>
+                        <div class="navbar-brand fw-bold text-primary">
+                            SIPKAM
+                        </div>
+                    </div>
 
-                    <ul class="navbar-nav">
-                        <li class="nav-item dropdown">
-                            <a class="nav-link dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown">
-                                <i class="fas fa-user me-1"></i>{{ auth()->user()->name ?? 'User' }}
-                            </a>
-                            <ul class="dropdown-menu dropdown-menu-end">
+                    <div class="user-menu">
+                        <div class="dropdown">
+                            <button class="btn btn-link text-decoration-none dropdown-toggle d-flex align-items-center" type="button" data-bs-toggle="dropdown">
+                                <div class="avatar-circle me-2">
+                                    <i class="fas fa-user text-primary"></i>
+                                </div>
+                                <span class="d-none d-md-inline">{{ auth()->user()->name ?? 'User' }}</span>
+                            </button>
+                            <ul class="dropdown-menu dropdown-menu-end shadow">
                                 <li><a class="dropdown-item" href="#"><i class="fas fa-user me-2"></i>Profile</a></li>
                                 <li><hr class="dropdown-divider"></li>
                                 <li>
@@ -739,39 +800,39 @@
                                     </form>
                                 </li>
                             </ul>
-                        </li>
-                    </ul>
+                        </div>
+                    </div>
                 </div>
-            </div>
-        </nav>
+            </nav>
 
-        <main class="container py-4">
-            @if (session('success'))
-                <div class="alert alert-modern alert-modern-success alert-dismissible fade show mb-4" role="alert">
-                    <i class="fas fa-check-circle me-2"></i>
-                    {{ session('success') }}
-                    <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
-                </div>
-            @endif
+            <main class="p-4">
+                @if (session('success'))
+                    <div class="alert alert-modern alert-modern-success alert-dismissible fade show mb-4" role="alert">
+                        <i class="fas fa-check-circle me-2"></i>
+                        {{ session('success') }}
+                        <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+                    </div>
+                @endif
 
-            @if (session('error'))
-                <div class="alert alert-modern alert-modern-danger alert-dismissible fade show mb-4" role="alert">
-                    <i class="fas fa-exclamation-triangle me-2"></i>
-                    {{ session('error') }}
-                    <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
-                </div>
-            @endif
+                @if (session('error'))
+                    <div class="alert alert-modern alert-modern-danger alert-dismissible fade show mb-4" role="alert">
+                        <i class="fas fa-exclamation-triangle me-2"></i>
+                        {{ session('error') }}
+                        <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+                    </div>
+                @endif
 
-            @if (session('warning'))
-                <div class="alert alert-modern alert-modern-warning alert-dismissible fade show mb-4" role="alert">
-                    <i class="fas fa-exclamation-circle me-2"></i>
-                    {{ session('warning') }}
-                    <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
-                </div>
-            @endif
+                @if (session('warning'))
+                    <div class="alert alert-modern alert-modern-warning alert-dismissible fade show mb-4" role="alert">
+                        <i class="fas fa-exclamation-circle me-2"></i>
+                        {{ session('warning') }}
+                        <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+                    </div>
+                @endif
 
-            @yield('content')
-        </main>
+                @yield('content')
+            </main>
+        </div>
     @endif
 
     <!-- Bootstrap JS -->
@@ -779,7 +840,7 @@
     <script>
         // Modern UI Interactions
         document.addEventListener('DOMContentLoaded', function() {
-            // Sidebar toggle for mobile
+            // Sidebar toggle for mobile (Petugas)
             const sidebarToggle = document.getElementById('sidebar-toggle');
             const sidebar = document.getElementById('sidebar');
             const mainContent = document.getElementById('main-content');
@@ -790,11 +851,32 @@
                 });
             }
 
+            // Sidebar toggle for mobile (Mahasiswa)
+            const sidebarToggleMahasiswa = document.getElementById('sidebar-toggle-mahasiswa');
+            const sidebarMahasiswa = document.getElementById('sidebar-mahasiswa');
+            const mainContentMahasiswa = document.getElementById('main-content-mahasiswa');
+
+            if (sidebarToggleMahasiswa && sidebarMahasiswa) {
+                sidebarToggleMahasiswa.addEventListener('click', function(e) {
+                    e.preventDefault();
+                    e.stopPropagation();
+                    sidebarMahasiswa.classList.toggle('show');
+                });
+            }
+
             // Close sidebar when clicking outside on mobile
             if (mainContent && sidebar) {
                 mainContent.addEventListener('click', function(e) {
                     if (window.innerWidth <= 768 && sidebar.classList.contains('show')) {
                         sidebar.classList.remove('show');
+                    }
+                });
+            }
+
+            if (mainContentMahasiswa && sidebarMahasiswa) {
+                mainContentMahasiswa.addEventListener('click', function(e) {
+                    if (window.innerWidth <= 768 && sidebarMahasiswa.classList.contains('show')) {
+                        sidebarMahasiswa.classList.remove('show');
                     }
                 });
             }

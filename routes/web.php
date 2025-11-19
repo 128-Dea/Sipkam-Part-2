@@ -21,9 +21,9 @@ Route::get('/', function () {
     if (auth()->check()) {
         $user = auth()->user();
         return match ($user->role) {
-            'petugas' => redirect()->route('petugas.dashboard'),
+            'petugas'   => redirect()->route('petugas.dashboard'),
             'mahasiswa' => redirect()->route('mahasiswa.dashboard'),
-            default => redirect()->route('login'),
+            default     => redirect()->route('login'),
         };
     }
     return redirect()->route('login');
@@ -38,15 +38,18 @@ Route::get('/dashboard', function () {
     }
 
     return match ($user->role) {
-        'petugas' => redirect()->route('petugas.dashboard'),
+        'petugas'   => redirect()->route('petugas.dashboard'),
         'mahasiswa' => redirect()->route('mahasiswa.dashboard'),
-        default => redirect()->route('home'),
+        default     => redirect()->route('home'),
     };
 })->middleware('auth')->name('dashboard');
 
-// Mahasiswa (middleware: auth + role:mahasiswa)
+// =======================
+//  Mahasiswa
+// =======================
 Route::middleware(['auth','role:mahasiswa'])->group(function() {
     Route::get('/mahasiswa/dashboard', [MahasiswaController::class, 'index'])->name('mahasiswa.dashboard');
+
     Route::resource('peminjaman', PeminjamanController::class);
     Route::resource('keluhan', KeluhanController::class)->except(['edit', 'update', 'destroy']);
     Route::resource('perpanjangan', PerpanjanganController::class);
@@ -56,11 +59,16 @@ Route::middleware(['auth','role:mahasiswa'])->group(function() {
     Route::get('/riwayat', [RiwayatController::class, 'index'])->name('riwayat.index');
 });
 
-// Petugas (middleware: auth + role:petugas)
+// =======================
+//  Petugas
+// =======================
 Route::middleware(['auth','role:petugas'])->group(function() {
     Route::get('/petugas/dashboard', [PetugasController::class, 'dashboard'])->name('petugas.dashboard');
 
-    Route::resource('barang', BarangController::class);
+    // CRUD barang hanya untuk petugas
+    // index & show kita pisahkan di bawah (bisa diakses mahasiswa juga)
+    Route::resource('barang', BarangController::class)->except(['index', 'show']);
+
     Route::resource('kategori', KategoriController::class);
     Route::resource('service', ServiceController::class);
     Route::resource('denda', DendaController::class);
@@ -71,6 +79,18 @@ Route::middleware(['auth','role:petugas'])->group(function() {
     Route::resource('serahterima', SerahTerimaController::class)->only(['index']);
 
     Route::resource('notifikasi', NotifikasiController::class)->only(['index']);
+});
+
+// =======================
+//  Barang: bisa dilihat petugas & mahasiswa (read-only)
+// =======================
+// Di sini mahasiswa bisa:
+// - GET /barang          -> route('barang.index')
+// - GET /barang/{barang} -> route('barang.show')
+// Tetapi tidak bisa create/edit/delete karena itu ada di grup petugas di atas
+Route::middleware(['auth'])->group(function () {
+    Route::get('/barang', [BarangController::class, 'index'])->name('barang.index');
+    Route::get('/barang/{barang}', [BarangController::class, 'show'])->name('barang.show');
 });
 
 require __DIR__.'/auth.php';

@@ -11,7 +11,15 @@ class BarangController extends Controller
 {
     public function index()
     {
-        $barang = Barang::with('kategori')->get();
+        // Jika petugas: lihat semua barang
+        if (auth()->check() && auth()->user()->role === 'petugas') {
+            $barang = Barang::with('kategori')->get();
+        } else {
+            // Mahasiswa / user lain / tamu: hanya barang dengan status 'tersedia'
+            $barang = Barang::with('kategori')
+                ->where('status', 'tersedia')
+                ->get();
+        }
 
         return view('barang.index', compact('barang'));
     }
@@ -44,6 +52,14 @@ class BarangController extends Controller
         Barang::create($data);
 
         return redirect()->route('barang.index')->with('success', 'Barang berhasil ditambahkan');
+    }
+
+    public function show(Barang $barang)
+    {
+        // pastikan relasi kategori ikut dibawa
+        $barang->load('kategori');
+
+        return view('barang.show', compact('barang'));
     }
 
     public function edit(Barang $barang)
