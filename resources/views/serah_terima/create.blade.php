@@ -3,7 +3,7 @@
 @section('content')
 <h1 class="h3 mb-4">Form Serah Terima</h1>
 
-<form method="POST" action="{{ route('serahterima.store') }}" class="card border-0 shadow-sm">
+<form method="POST" action="{{ route('mahasiswa.serahterima.store') }}" class="card border-0 shadow-sm">
     @csrf
     <div class="card-body">
         <div class="mb-3">
@@ -47,7 +47,7 @@
         </div>
     </div>
     <div class="card-footer text-end bg-white">
-        <a href="{{ url()->previous() }}" class="btn btn-light">Batal</a>
+        <a href="{{ route('mahasiswa.dashboard') }}" class="btn btn-light">Batal</a>
         <button type="submit" class="btn btn-primary">Simpan</button>
     </div>
 </form>

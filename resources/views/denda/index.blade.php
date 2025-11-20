@@ -1,9 +1,12 @@
 @extends('layouts.app')
 
 @section('content')
+@php
+    $dendaRouteScope = 'petugas'; // Hanya petugas yang memiliki akses denda
+@endphp
 <div class="d-flex justify-content-between mb-4">
     <h1 class="h3 mb-0">Denda Peminjaman</h1>
-    <a href="{{ route('denda.create') }}" class="btn btn-primary">Tambah Denda</a>
+    <a href="{{ route($dendaRouteScope . '.denda.create') }}" class="btn btn-primary">Tambah Denda</a>
 </div>
 
 <div class="card border-0 shadow-sm">
@@ -32,7 +35,7 @@
                             </span>
                         </td>
                         <td>
-                            <form method="POST" action="{{ route('denda.update', $item->id_denda) }}" class="d-flex gap-2">
+                            <form method="POST" action="{{ route($dendaRouteScope . '.denda.update', $item->id_denda) }}" class="d-flex gap-2">
                                 @csrf
                                 @method('PUT')
                                 <select name="status_pembayaran" class="form-select form-select-sm">

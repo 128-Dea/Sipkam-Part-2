@@ -1,9 +1,14 @@
 @extends('layouts.app')
 
 @section('content')
+@php
+    $pengembalianRouteScope = auth()->user()?->role === 'petugas' ? 'petugas' : 'mahasiswa';
+@endphp
 <div class="d-flex justify-content-between mb-4">
     <h1 class="h3 mb-0">Pengembalian Barang</h1>
-    <a href="{{ route('pengembalian.create') }}" class="btn btn-primary">Input Pengembalian</a>
+    @if($pengembalianRouteScope === 'mahasiswa')
+        <a href="{{ route($pengembalianRouteScope . '.pengembalian.create') }}" class="btn btn-primary">Input Pengembalian</a>
+    @endif
 </div>
 <div class="card border-0 shadow-sm">
     <div class="table-responsive">

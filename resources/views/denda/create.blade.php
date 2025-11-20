@@ -2,7 +2,7 @@
 
 @section('content')
 <h1 class="h3 mb-4">Tambah Denda</h1>
-<form method="POST" action="{{ route('denda.store') }}" class="card border-0 shadow-sm">
+<form method="POST" action="{{ route('petugas.denda.store') }}" class="card border-0 shadow-sm">
     @csrf
     <div class="card-body">
         <div class="mb-3">
@@ -35,7 +35,7 @@
         </div>
     </div>
     <div class="card-footer text-end bg-white">
-        <a href="{{ route('denda.index') }}" class="btn btn-light">Batal</a>
+        <a href="{{ route('petugas.denda.index') }}" class="btn btn-light">Batal</a>
         <button class="btn btn-primary" type="submit">Simpan</button>
     </div>
 </form>

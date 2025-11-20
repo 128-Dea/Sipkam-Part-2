@@ -3,7 +3,7 @@
 @section('content')
 <h1 class="h3 mb-4">Ajukan Perpanjangan</h1>
 
-<form method="POST" action="{{ route('perpanjangan.store') }}" class="card border-0 shadow-sm">
+<form method="POST" action="{{ route('mahasiswa.perpanjangan.store') }}" class="card border-0 shadow-sm">
     @csrf
     <div class="card-body">
         <div class="mb-3">
@@ -35,7 +35,7 @@
         </div>
     </div>
     <div class="card-footer text-end bg-white">
-        <a href="{{ route('perpanjangan.index') }}" class="btn btn-light">Batal</a>
+        <a href="{{ route('mahasiswa.perpanjangan.index') }}" class="btn btn-light">Batal</a>
         <button class="btn btn-primary" type="submit">Kirim Pengajuan</button>
     </div>
 </form>

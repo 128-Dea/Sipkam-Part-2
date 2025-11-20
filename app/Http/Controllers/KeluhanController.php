@@ -62,7 +62,7 @@ class KeluhanController extends Controller
             }
         }
 
-        return redirect()->route('keluhan.index')->with('success', 'Keluhan berhasil dicatat');
+        return redirect()->route('mahasiswa.keluhan.index')->with('success', 'Keluhan berhasil dicatat');
     }
 
     public function show(Keluhan $keluhan)

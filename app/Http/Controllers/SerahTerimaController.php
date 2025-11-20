@@ -68,6 +68,7 @@ class SerahTerimaController extends Controller
             ]);
         });
 
-        return redirect()->route('serah_terima.index')->with('success', 'Serah terima berhasil diproses');
+        // Serah terima hanya dibuat oleh mahasiswa; arahkan kembali ke dashboard mahasiswa
+        return redirect()->route('mahasiswa.dashboard')->with('success', 'Serah terima berhasil diproses');
     }
 }

@@ -1,12 +1,17 @@
 @extends('layouts.app')
 
 @section('content')
+@php
+    $serahTerimaScope = auth()->user()?->role === 'mahasiswa' ? 'mahasiswa' : 'petugas';
+@endphp
 <div class="d-flex justify-content-between mb-4">
     <div>
         <h1 class="h3 mb-1">Serah Terima Barang</h1>
         <small class="text-muted">Riwayat perpindahan tanggung jawab barang</small>
     </div>
-    <a href="{{ route('serahterima.create') }}" class="btn btn-primary">Buat Serah Terima</a>
+    @if($serahTerimaScope === 'mahasiswa')
+        <a href="{{ route($serahTerimaScope . '.serahterima.create') }}" class="btn btn-primary">Buat Serah Terima</a>
+    @endif
 </div>
 
 <div class="card border-0 shadow-sm">

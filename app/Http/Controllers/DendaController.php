@@ -35,7 +35,7 @@ class DendaController extends Controller
 
         Denda::create($data);
 
-        return redirect()->route('denda.index')->with('success', 'Denda berhasil ditambahkan');
+        return redirect()->route('petugas.denda.index')->with('success', 'Denda berhasil ditambahkan');
     }
 
     public function update(Request $request, Denda $denda)
@@ -46,6 +46,6 @@ class DendaController extends Controller
 
         $denda->update($data);
 
-        return redirect()->route('denda.index')->with('success', 'Status pembayaran diperbarui');
+        return redirect()->route('petugas.denda.index')->with('success', 'Status pembayaran diperbarui');
     }
 }

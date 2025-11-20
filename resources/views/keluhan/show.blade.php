@@ -1,6 +1,9 @@
 @extends('layouts.app')
 
 @section('content')
+@php
+    $keluhanRouteScope = auth()->user()?->role === 'petugas' ? 'petugas' : 'mahasiswa';
+@endphp
 <div class="row">
     <div class="col-md-8">
         <h1 class="mb-4">Detail Keluhan #{{ $keluhan->id_keluhan }}</h1>
@@ -66,6 +69,6 @@
 </div>
 
 <div class="mt-4">
-    <a href="{{ route('keluhan.index') }}" class="btn btn-secondary">Kembali ke Daftar Keluhan</a>
+    <a href="{{ route($keluhanRouteScope . '.keluhan.index') }}" class="btn btn-secondary">Kembali ke Daftar Keluhan</a>
 </div>
 @endsection

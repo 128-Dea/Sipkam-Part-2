@@ -1,12 +1,17 @@
 @extends('layouts.app')
 
 @section('content')
+@php
+    $keluhanRouteScope = auth()->user()?->role === 'petugas' ? 'petugas' : 'mahasiswa';
+@endphp
 <div class="d-flex justify-content-between align-items-center mb-4">
     <div>
         <h1 class="h3 mb-1">Keluhan Mahasiswa</h1>
         <small class="text-muted">Kelola laporan gangguan selama peminjaman</small>
     </div>
-    <a href="{{ route('keluhan.create') }}" class="btn btn-primary">Laporkan Keluhan</a>
+    @if($keluhanRouteScope === 'mahasiswa')
+        <a href="{{ route($keluhanRouteScope . '.keluhan.create') }}" class="btn btn-primary">Laporkan Keluhan</a>
+    @endif
 </div>
 
 <div class="card border-0 shadow-sm">
@@ -39,7 +44,7 @@
                         <td>{{ $item->pengguna->nama ?? '-' }}</td>
                         <td>{{ optional($item->created_at)->format('d M Y') ?? '-' }}</td>
                         <td>
-                            <a href="{{ route('keluhan.show', $item->id_keluhan) }}" class="btn btn-sm btn-outline-primary">Detail</a>
+                            <a href="{{ route($keluhanRouteScope . '.keluhan.show', $item->id_keluhan) }}" class="btn btn-sm btn-outline-primary">Detail</a>
                         </td>
                     </tr>
                 @empty

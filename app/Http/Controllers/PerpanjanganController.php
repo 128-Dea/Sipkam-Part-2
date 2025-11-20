@@ -42,7 +42,7 @@ class PerpanjanganController extends Controller
 
         Perpanjangan::create($data);
 
-        return redirect()->route('perpanjangan.index')->with('success', 'Permohonan perpanjangan berhasil dikirim');
+        return redirect()->route('mahasiswa.perpanjangan.index')->with('success', 'Permohonan perpanjangan berhasil dikirim');
     }
 
     public function update(Request $request, Perpanjangan $perpanjangan)
@@ -53,6 +53,8 @@ class PerpanjanganController extends Controller
 
         $perpanjangan->update($data);
 
-        return redirect()->route('perpanjangan.index')->with('success', 'Status perpanjangan diperbarui');
+        $routeScope = auth()->user()?->role === 'petugas' ? 'petugas' : 'mahasiswa';
+
+        return redirect()->route($routeScope . '.perpanjangan.index')->with('success', 'Status perpanjangan diperbarui');
     }
 }

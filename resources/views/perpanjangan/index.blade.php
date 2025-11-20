@@ -1,12 +1,17 @@
 @extends('layouts.app')
 
 @section('content')
+@php
+    $perpanjanganRouteScope = auth()->user()?->role === 'petugas' ? 'petugas' : 'mahasiswa';
+@endphp
 <div class="d-flex justify-content-between mb-4">
     <div>
         <h1 class="h3 mb-1">Perpanjangan Peminjaman</h1>
         <small class="text-muted">Pantau status pengajuan perpanjangan</small>
     </div>
-    <a href="{{ route('perpanjangan.create') }}" class="btn btn-primary">Ajukan Perpanjangan</a>
+    @if($perpanjanganRouteScope === 'mahasiswa')
+        <a href="{{ route($perpanjanganRouteScope . '.perpanjangan.create') }}" class="btn btn-primary">Ajukan Perpanjangan</a>
+    @endif
 </div>
 
 <div class="card border-0 shadow-sm">

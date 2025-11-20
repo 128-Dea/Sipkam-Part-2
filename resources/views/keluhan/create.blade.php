@@ -3,7 +3,7 @@
 @section('content')
 <h1 class="h3 mb-4">Form Keluhan Peminjaman</h1>
 
-<form method="POST" action="{{ route('keluhan.store') }}" class="card border-0 shadow-sm" enctype="multipart/form-data">
+<form method="POST" action="{{ route('mahasiswa.keluhan.store') }}" class="card border-0 shadow-sm" enctype="multipart/form-data">
     @csrf
     <div class="card-body">
         <div class="mb-3">
@@ -31,7 +31,7 @@
         </div>
     </div>
     <div class="card-footer text-end bg-white">
-        <a href="{{ route('keluhan.index') }}" class="btn btn-light">Batal</a>
+        <a href="{{ route('mahasiswa.keluhan.index') }}" class="btn btn-light">Batal</a>
         <button class="btn btn-warning" type="submit">Kirim Keluhan</button>
     </div>
 </form>
