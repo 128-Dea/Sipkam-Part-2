@@ -54,11 +54,6 @@ class Peminjaman extends Model
         return $this->hasMany(Perpanjangan::class, 'id_peminjaman', 'id_peminjaman');
     }
 
-    public function serahTerima(): HasMany
-    {
-        return $this->hasMany(SerahTerima::class, 'id_peminjaman', 'id_peminjaman');
-    }
-
     public function qr(): HasOne
     {
         return $this->hasOne(Qr::class, 'id_peminjaman', 'id_peminjaman');

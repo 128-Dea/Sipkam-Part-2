@@ -12,9 +12,14 @@ use Illuminate\Support\Str;
 
 class KeluhanController extends Controller
 {
-    public function index()
+    public function index(Request $request)
     {
-        $keluhan = Keluhan::with(['pengguna', 'peminjaman.barang'])->orderByDesc('id_keluhan')->get();
+        $status = $request->query('status');
+
+        $keluhan = Keluhan::with(['pengguna', 'peminjaman.barang', 'service'])
+            ->when($status, fn($q) => $q->where('status', $status))
+            ->orderByDesc('id_keluhan')
+            ->get();
 
         return view('keluhan.index', compact('keluhan'));
     }
@@ -75,6 +80,59 @@ class KeluhanController extends Controller
         }
 
         return view('keluhan.show', compact('keluhan'));
+    }
+
+    public function kirimService(Keluhan $keluhan)
+    {
+        if (auth()->user()->role !== 'petugas') {
+            abort(403);
+        }
+
+        DB::transaction(function () use ($keluhan) {
+            $keluhan->update([
+                'status' => 'ditangani',
+                'tindak_lanjut' => 'Dikirim ke service',
+                'handled_at' => now(),
+            ]);
+
+            if ($keluhan->peminjaman?->barang) {
+                $keluhan->peminjaman->barang->update(['status' => 'service']);
+            }
+
+            if (!$keluhan->service) {
+                \App\Models\Service::create([
+                    'id_keluhan' => $keluhan->id_keluhan,
+                    'status' => 'mengantri',
+                ]);
+            }
+        });
+
+        return back()->with('success', 'Keluhan dikirim ke service dan status diperbarui.');
+    }
+
+    public function tandaiSelesai(Keluhan $keluhan)
+    {
+        if (auth()->user()->role !== 'petugas') {
+            abort(403);
+        }
+
+        DB::transaction(function () use ($keluhan) {
+            $keluhan->update([
+                'status' => 'selesai',
+                'tindak_lanjut' => 'Keluhan ditandai selesai',
+                'handled_at' => now(),
+            ]);
+
+            if ($keluhan->service) {
+                $keluhan->service->update(['status' => 'selesai']);
+            }
+
+            if ($keluhan->peminjaman?->barang && $keluhan->peminjaman->barang->status === 'service') {
+                $keluhan->peminjaman->barang->update(['status' => 'tersedia']);
+            }
+        });
+
+        return back()->with('success', 'Keluhan ditandai selesai.');
     }
 
     protected function resolveAuthPenggunaId(): ?int

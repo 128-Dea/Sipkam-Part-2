@@ -90,10 +90,6 @@
                         <span>Perpanjangan</span>
                         <span class="badge bg-secondary">{{ $peminjaman->perpanjangan->count() }}</span>
                     </li>
-                    <li class="list-group-item d-flex justify-content-between">
-                        <span>Serah Terima</span>
-                        <span class="badge bg-secondary">{{ $peminjaman->serahTerima->count() }}</span>
-                    </li>
                 </ul>
             </div>
         </div>
@@ -107,7 +103,7 @@
                 <h5 class="card-title mb-3">QR Code</h5>
                 @if($peminjaman->qr)
                     <img
-                        src="https://api.qrserver.com/v1/create-qr-code/?size=180x180&data={{ $peminjaman->qr->qr_code }}"
+                        src="https://api.qrserver.com/v1/create-qr-code/?size=180x180&data={{ urlencode($peminjaman->qr->payload) }}"
                         alt="QR Peminjaman"
                         class="img-fluid mb-2"
                     >

@@ -15,7 +15,7 @@ class PeminjamanController extends Controller
     {
         $user = auth()->user();
 
-        $query = Peminjaman::with(['barang', 'pengguna', 'qr'])
+        $query = Peminjaman::with(['barang', 'pengguna', 'qr', 'perpanjangan', 'keluhan'])
             ->orderByDesc('waktu_awal');
 
         if ($user && $user->role === 'mahasiswa') {
@@ -28,6 +28,18 @@ class PeminjamanController extends Controller
         $peminjaman = $query->get();
 
         return view('peminjaman.index', compact('peminjaman'));
+    }
+
+    public function booking()
+    {
+        $user = auth()->user();
+        abort_unless($user && $user->role === 'petugas', 403);
+
+        $booking = Peminjaman::with(['barang', 'pengguna', 'qr'])
+            ->orderByDesc('waktu_awal')
+            ->get();
+
+        return view('peminjaman.booking', ['booking' => $booking]);
     }
 
     public function create()
@@ -90,7 +102,7 @@ class PeminjamanController extends Controller
             abort(403);
         }
 
-        $peminjaman->load(['barang', 'pengguna', 'qr', 'keluhan', 'perpanjangan', 'serahTerima']);
+        $peminjaman->load(['barang', 'pengguna', 'qr', 'keluhan', 'perpanjangan']);
 
         return view('peminjaman.show', compact('peminjaman'));
     }

@@ -34,14 +34,4 @@ class Pengguna extends Model
     {
         return $this->hasMany(Notifikasi::class, 'id_pengguna', 'id_pengguna');
     }
-
-    public function serahTerimaSebagaiPenggunaLama(): HasMany
-    {
-        return $this->hasMany(SerahTerima::class, 'pengguna_lama', 'id_pengguna');
-    }
-
-    public function serahTerimaSebagaiPenggunaBaru(): HasMany
-    {
-        return $this->hasMany(SerahTerima::class, 'pengguna_baru', 'id_pengguna');
-    }
 }

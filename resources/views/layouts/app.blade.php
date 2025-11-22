@@ -693,6 +693,12 @@
                         </a>
                     </li>
                     <li class="nav-item">
+                        <a class="nav-link {{ request()->routeIs('petugas.booking.*') ? 'active' : '' }}" href="{{ route('petugas.booking.index') }}">
+                            <i class="fas fa-calendar-check"></i>
+                            <span>Booking</span>
+                        </a>
+                    </li>
+                    <li class="nav-item">
                         <a class="nav-link {{ request()->routeIs('petugas.peminjaman.*') ? 'active' : '' }}" href="{{ route('petugas.peminjaman.index') }}">
                             <i class="fas fa-hand-holding"></i>
                             <span>Peminjaman</span>
@@ -717,9 +723,9 @@
                         </a>
                     </li>
                     <li class="nav-item">
-                        <a class="nav-link {{ request()->routeIs('petugas.perpanjangan.*') ? 'active' : '' }}" href="{{ route('petugas.perpanjangan.index') }}">
-                            <i class="fas fa-clock"></i>
-                            <span>Perpanjangan</span>
+                        <a class="nav-link {{ request()->routeIs('petugas.riwayat.*') ? 'active' : '' }}" href="{{ route('petugas.riwayat.index') }}">
+                            <i class="fas fa-folder-open"></i>
+                            <span>Histori</span>
                         </a>
                     </li>
                     <li class="nav-item">
@@ -729,9 +735,9 @@
                         </a>
                     </li>
                     <li class="nav-item">
-                        <a class="nav-link {{ request()->routeIs('petugas.serahterima.*') ? 'active' : '' }}" href="{{ route('petugas.serahterima.index') }}">
-                            <i class="fas fa-handshake"></i>
-                            <span>Serah Terima</span>
+                        <a class="nav-link {{ request()->routeIs('profile.show') ? 'active' : '' }}" href="{{ route('profile.show') }}">
+                            <i class="fas fa-user"></i>
+                            <span>Profile</span>
                         </a>
                     </li>
                     <li class="nav-item">
@@ -768,7 +774,7 @@
                                 <span class="d-none d-md-inline">{{ auth()->user()->name }}</span>
                             </button>
                             <ul class="dropdown-menu dropdown-menu-end shadow">
-                                <li><a class="dropdown-item" href="#"><i class="fas fa-user me-2"></i>Profile</a></li>
+                                <li><a class="dropdown-item" href="{{ route('profile.show') }}"><i class="fas fa-user me-2"></i>Profile</a></li>
                                 <li><hr class="dropdown-divider"></li>
                                 <li>
                                     <form method="POST" action="{{ route('logout') }}" class="d-inline">
@@ -863,7 +869,13 @@
                         </a>
                     </li>
                     <li class="nav-item">
-                        <a class="nav-link" href="#">
+                        <a class="nav-link {{ request()->routeIs('profile.show') ? 'active' : '' }}" href="{{ route('profile.show') }}">
+                            <i class="fas fa-user"></i>
+                            <span>Profile</span>
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link {{ request()->routeIs('profile.show') ? 'active' : '' }}" href="{{ route('profile.show') }}">
                             <i class="fas fa-user"></i>
                             <span>Profile</span>
                         </a>
@@ -898,7 +910,7 @@
                                 <span class="d-none d-md-inline">{{ auth()->user()->name ?? 'User' }}</span>
                             </button>
                             <ul class="dropdown-menu dropdown-menu-end shadow">
-                                <li><a class="dropdown-item" href="#"><i class="fas fa-user me-2"></i>Profile</a></li>
+                                <li><a class="dropdown-item" href="{{ route('profile.show') }}"><i class="fas fa-user me-2"></i>Profile</a></li>
                                 <li><hr class="dropdown-divider"></li>
                                 <li>
                                     <form method="POST" action="{{ route('logout') }}" class="d-inline">

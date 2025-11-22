@@ -16,6 +16,9 @@ class Keluhan extends Model
 
     protected $fillable = [
         'keluhan',
+        'status',
+        'tindak_lanjut',
+        'handled_at',
         'id_pengguna',
         'id_peminjaman',
         'foto_path',

@@ -9,7 +9,6 @@ use App\Http\Controllers\PeminjamanController;
 use App\Http\Controllers\PengembalianController;
 use App\Http\Controllers\KeluhanController;
 use App\Http\Controllers\PerpanjanganController;
-use App\Http\Controllers\SerahTerimaController;
 use App\Http\Controllers\NotifikasiController;
 use App\Http\Controllers\QrController;
 use App\Http\Controllers\RiwayatController;
@@ -54,7 +53,6 @@ Route::middleware(['auth', 'role:mahasiswa'])
         Route::resource('peminjaman', PeminjamanController::class);
         Route::resource('keluhan', KeluhanController::class)->except(['edit', 'update', 'destroy']);
         Route::resource('perpanjangan', PerpanjanganController::class);
-        Route::resource('serahterima', SerahTerimaController::class)->only(['create', 'store']);
         Route::resource('notifikasi', NotifikasiController::class)->only(['index']);
         Route::get('/qr/{id}', [QrController::class, 'show'])->name('qr.show');
         Route::get('/riwayat', [RiwayatController::class, 'index'])->name('riwayat.index');
@@ -79,23 +77,24 @@ Route::middleware(['auth', 'role:petugas'])
         Route::resource('denda', DendaController::class);
 
         // Route tambahan untuk proses pengembalian via QR
-Route::get('pengembalian', [PengembalianController::class, 'index'])->name('pengembalian.index');
-Route::get('pengembalian/scan', [PengembalianController::class, 'scanForm'])->name('pengembalian.scan');
-Route::post('pengembalian/scan', [PengembalianController::class, 'handleScan'])->name('pengembalian.handleScan');
-Route::get('pengembalian/{peminjaman}/konfirmasi', [PengembalianController::class, 'konfirmasi'])->name('pengembalian.konfirmasi');
-Route::post('pengembalian/{peminjaman}/tanpa-kerusakan', [PengembalianController::class, 'prosesTanpaKerusakan'])->name('pengembalian.tanpaKerusakan');
-Route::get('pengembalian/{peminjaman}/kerusakan', [PengembalianController::class, 'formKerusakan'])->name('pengembalian.formKerusakan');
-Route::post('pengembalian/{peminjaman}/kerusakan', [PengembalianController::class, 'prosesDenganKerusakan'])->name('pengembalian.prosesKerusakan');
+        Route::get('pengembalian', [PengembalianController::class, 'index'])->name('pengembalian.index');
+        Route::get('pengembalian/scan', [PengembalianController::class, 'scanForm'])->name('pengembalian.scan');
+        Route::post('pengembalian/scan', [PengembalianController::class, 'handleScan'])->name('pengembalian.handleScan');
+        Route::post('pengembalian/{peminjaman}/proses', [PengembalianController::class, 'prosesLengkap'])->name('pengembalian.prosesLengkap');
+        Route::get('pengembalian/{peminjaman}/konfirmasi', [PengembalianController::class, 'konfirmasi'])->name('pengembalian.konfirmasi');
+        Route::post('pengembalian/{peminjaman}/tanpa-kerusakan', [PengembalianController::class, 'prosesTanpaKerusakan'])->name('pengembalian.tanpaKerusakan');
+        Route::get('pengembalian/{peminjaman}/kerusakan', [PengembalianController::class, 'formKerusakan'])->name('pengembalian.formKerusakan');
+        Route::post('pengembalian/{peminjaman}/kerusakan', [PengembalianController::class, 'prosesDenganKerusakan'])->name('pengembalian.prosesKerusakan');
 
+        Route::get('booking', [PeminjamanController::class, 'booking'])->name('booking.index');
         Route::resource('peminjaman', PeminjamanController::class)->only(['index', 'show', 'destroy']);
         Route::resource('keluhan', KeluhanController::class)->only(['index', 'show']);
-        Route::resource('perpanjangan', PerpanjanganController::class)->only(['index', 'show', 'update']);
-
-        Route::post('/perpanjangan/{id}/approve', [PerpanjanganController::class, 'approve'])->name('perpanjangan.approve');
-        Route::post('/serahterima/{id}/approve', [SerahTerimaController::class, 'approve'])->name('serahterima.approve');
-        Route::resource('serahterima', SerahTerimaController::class)->only(['index']);
-
+        Route::post('keluhan/{keluhan}/service', [KeluhanController::class, 'kirimService'])->name('keluhan.service');
+        Route::post('keluhan/{keluhan}/selesai', [KeluhanController::class, 'tandaiSelesai'])->name('keluhan.selesai');
         Route::resource('notifikasi', NotifikasiController::class)->only(['index']);
+        Route::get('riwayat-transaksi', [\App\Http\Controllers\RiwayatController::class, 'petugas'])->name('riwayat.index');
+        Route::get('riwayat-transaksi/export/csv', [\App\Http\Controllers\RiwayatController::class, 'exportCsv'])->name('riwayat.export.csv');
+        Route::get('riwayat-transaksi/export/html', [\App\Http\Controllers\RiwayatController::class, 'exportHtml'])->name('riwayat.export.html');
     });
 
 
@@ -104,6 +103,9 @@ Route::post('pengembalian/{peminjaman}/kerusakan', [PengembalianController::clas
 Route::middleware(['auth'])->group(function () {
     Route::get('/barang', [BarangController::class, 'index'])->name('barang.index');
     Route::get('/barang/{barang}', [BarangController::class, 'show'])->name('barang.show');
+
+    // Profil custom (tidak bentrok dengan route bawaan profile.edit/update)
+    Route::view('/profil', 'profile.show')->name('profile.show');
 });
 
 require __DIR__.'/auth.php';

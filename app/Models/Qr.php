@@ -17,18 +17,30 @@ class Qr extends Model
         'qr_code',
         'jenis_transaksi',
         'id_peminjaman',
-        'id_serah_terima',
         'dibuat_pada',
         'is_active',
     ];
+
+    protected $appends = ['payload'];
 
     public function peminjaman(): BelongsTo
     {
         return $this->belongsTo(Peminjaman::class, 'id_peminjaman', 'id_peminjaman');
     }
 
-    public function serahTerima(): BelongsTo
+    /**
+     * Payload yang disematkan pada QR berisi meta penting.
+     */
+    public function getPayloadAttribute(): string
     {
-        return $this->belongsTo(SerahTerima::class, 'id_serah_terima', 'id_serah_terima');
+        $peminjaman = $this->relationLoaded('peminjaman') ? $this->peminjaman : $this->peminjaman()->first();
+
+        return json_encode([
+            'type'           => $this->jenis_transaksi,
+            'kode_transaksi' => $this->qr_code,
+            'id_peminjaman'  => $this->id_peminjaman,
+            'id_mahasiswa'   => $peminjaman?->id_pengguna,
+            'id_barang'      => $peminjaman?->id_barang,
+        ]);
     }
 }

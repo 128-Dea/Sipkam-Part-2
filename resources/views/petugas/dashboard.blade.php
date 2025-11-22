@@ -143,11 +143,6 @@
                             <i class="fas fa-clock me-2"></i>
                             Perpanjangan
                         </a>
-                        <a href="{{ route('petugas.serahterima.index') }}"
-                           class="btn btn-outline-secondary d-flex align-items-center px-3">
-                            <i class="fas fa-handshake me-2"></i>
-                            Serah Terima
-                        </a>
                     </div>
 
                     <a href="{{ route('petugas.service.index') }}" class="small text-primary text-decoration-none">

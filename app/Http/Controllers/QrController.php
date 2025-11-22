@@ -9,15 +9,15 @@ class QrController extends Controller
 {
     public function index()
     {
-        $qr = Qr::with(['peminjaman', 'serahTerima'])->orderByDesc('id_qr')->get();
+        $qr = Qr::with(['peminjaman'])->orderByDesc('id_qr')->get();
 
         return view('qr.index', compact('qr'));
     }
 
     public function show(Qr $qr)
     {
-        $qr->load(['peminjaman', 'serahTerima']);
-        $qrImage = QrCode::format('svg')->size(200)->generate($qr->qr_code);
+        $qr->load(['peminjaman']);
+        $qrImage = QrCode::format('svg')->size(200)->generate($qr->payload);
 
         return view('qr.show', compact('qr', 'qrImage'));
     }

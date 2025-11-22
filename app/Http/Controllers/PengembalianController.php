@@ -104,8 +104,17 @@ class PengembalianController extends Controller
             'qr_code' => 'required|string',
         ]);
 
+        $rawInput = $data['qr_code'];
+        $kodeTransaksi = $rawInput;
+
+        // Jika QR berupa JSON payload, ambil kode_transaksi agar bisa dicocokkan.
+        $decoded = json_decode($rawInput, true);
+        if (is_array($decoded) && isset($decoded['kode_transaksi'])) {
+            $kodeTransaksi = $decoded['kode_transaksi'];
+        }
+
         $qr = Qr::with(['peminjaman.pengguna', 'peminjaman.barang'])
-            ->where('qr_code', $data['qr_code'])
+            ->where('qr_code', $kodeTransaksi)
             ->where('jenis_transaksi', 'peminjaman')
             ->where('is_active', true)
             ->first();
@@ -116,7 +125,14 @@ class PengembalianController extends Controller
             ]);
         }
 
-        return redirect()->route('petugas.pengembalian.konfirmasi', $qr->peminjaman->id_peminjaman);
+        $peminjaman = $qr->peminjaman;
+        $peminjaman->load(['barang', 'pengguna', 'qr']);
+
+        return view('pengembalian.form', [
+            'peminjaman' => $peminjaman,
+            'payload'    => $decoded,
+            'qr_code'    => $kodeTransaksi,
+        ]);
     }
 
     /**
@@ -128,6 +144,51 @@ class PengembalianController extends Controller
         $peminjaman->load(['barang', 'pengguna', 'qr']);
 
         return view('pengembalian.konfirmasi', compact('peminjaman'));
+    }
+
+    /**
+     * PROSES LENGKAP (PETUGAS) - satu form untuk baik/rusak/hilang
+     */
+    public function prosesLengkap(Request $request, Peminjaman $peminjaman)
+    {
+        $data = $request->validate([
+            'kondisi'             => 'required|in:baik,rusak,hilang',
+            'waktu_pengembalian'  => 'nullable|date',
+            'catatan'             => 'nullable|string',
+            'biaya_rusak'         => 'nullable|numeric|min:0',
+            'biaya_hilang'        => 'nullable|numeric|min:0',
+            'diterima_fisik'      => 'accepted',
+            'foto_kerusakan'      => 'nullable|image|max:2048',
+        ]);
+
+        $data['id_peminjaman'] = $peminjaman->id_peminjaman;
+        $data['waktu_pengembalian'] = $data['waktu_pengembalian'] ?? now();
+
+        $catatan = $data['catatan'] ?? '';
+        $kondisi = $data['kondisi'];
+
+        // Foto kerusakan opsional
+        if ($request->hasFile('foto_kerusakan')) {
+            $path = $request->file('foto_kerusakan')->store('kerusakan', 'public');
+            $catatan = trim($catatan . ' | Foto: ' . $path);
+        }
+
+        // Normalisasi biaya berdasar kondisi
+        $biayaRusak = $kondisi === 'rusak' ? ($data['biaya_rusak'] ?? 0) : 0;
+        $biayaHilang = $kondisi === 'hilang' ? ($data['biaya_hilang'] ?? 0) : 0;
+
+        $this->prosesPengembalianTransaksi([
+            'id_peminjaman'      => $peminjaman->id_peminjaman,
+            'waktu_pengembalian' => $data['waktu_pengembalian'],
+            'catatan'            => 'Kondisi: ' . ucfirst($kondisi) . ($catatan ? ' | ' . $catatan : ''),
+            'biaya_rusak'        => $biayaRusak,
+            'biaya_hilang'       => $biayaHilang,
+            'kondisi'            => $kondisi,
+        ], $peminjaman);
+
+        $peminjaman->load('pengembalian');
+
+        return view('pengembalian.sukses', compact('peminjaman'));
     }
 
     /**
@@ -235,15 +296,24 @@ class PengembalianController extends Controller
             // Update status peminjaman & stok barang
             $peminjaman->update(['status' => 'selesai']);
 
+            $kondisi = $data['kondisi'] ?? 'baik';
+
             if ($peminjaman->barang) {
                 $peminjaman->barang->increment('stok');
                 $peminjaman->barang->refresh();
 
-                if (in_array($peminjaman->barang->status, ['tersedia', 'dipinjam'])) {
-                    $peminjaman->barang->update([
-                        'status' => $peminjaman->barang->stok > 0 ? 'tersedia' : 'dipinjam',
-                    ]);
+                $nextStatus = 'tersedia';
+                if ($kondisi === 'rusak') {
+                    $nextStatus = 'service';
+                } elseif ($kondisi === 'hilang') {
+                    $nextStatus = 'hilang';
+                } elseif ($peminjaman->barang->stok <= 0) {
+                    $nextStatus = 'dipinjam';
                 }
+
+                $peminjaman->barang->update([
+                    'status' => $nextStatus,
+                ]);
             }
 
             // Simpan ke tabel riwayat
