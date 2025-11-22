@@ -37,6 +37,12 @@ class KategoriController extends Controller
         return view('kategori.edit', compact('kategori'));
     }
 
+    public function show(Kategori $kategori)
+    {
+        // Tidak ada halaman detail, arahkan ke form edit agar URL ini tetap aman dipakai.
+        return redirect()->route('petugas.kategori.edit', $kategori->id_kategori);
+    }
+
     public function update(Request $request, Kategori $kategori)
     {
         $data = $request->validate([
@@ -54,6 +60,6 @@ class KategoriController extends Controller
     {
         $kategori->delete();
 
-        return redirect()->route('kategori.index')->with('success', 'Kategori berhasil dihapus');
+        return redirect()->route('petugas.kategori.index')->with('success', 'Kategori berhasil dihapus');
     }
 }

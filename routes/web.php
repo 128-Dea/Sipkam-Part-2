@@ -80,7 +80,11 @@ Route::middleware(['auth', 'role:petugas'])
         Route::patch('barang/{barang}/stok/kurang', [BarangController::class, 'stokKurang'])
             ->name('barang.stok.kurang');
 
-        Route::resource('kategori', KategoriController::class);
+        Route::resource('kategori', KategoriController::class)->missing(function () {
+            return redirect()
+                ->route('petugas.kategori.index')
+                ->with('error', 'Kategori tidak ditemukan atau sudah dihapus.');
+        });
 
         // Modul service (petugas.service.*)
         Route::resource('service', ServiceController::class)->only(['index', 'update']);

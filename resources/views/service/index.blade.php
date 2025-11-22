@@ -62,7 +62,7 @@
                                 {{ \Illuminate\Support\Str::limit($item->keluhan->keluhan ?? '-', 120) }}
                             </td>
 
-                            {{-- TANGGAL MASUK SERVICE --}}
+                            {{-- TANGGAL & JAM MASUK SERVICE --}}
                             <td>
                                 <form method="POST"
                                       action="{{ route('petugas.service.update', $item->id_service) }}"
@@ -70,18 +70,20 @@
                                     @csrf
                                     @method('PUT')
 
-                                    <input type="date"
+                                    <input type="datetime-local"
                                            name="tgl_masuk_service"
                                            class="form-control form-control-sm"
-                                           value="{{ $item->tgl_masuk_service ? $item->tgl_masuk_service->format('Y-m-d') : '' }}">
+                                           step="60"
+                                           value="{{ $item->tgl_masuk_service ? $item->tgl_masuk_service->format('Y-m-d\\TH:i') : '' }}">
                             </td>
 
                             {{-- ESTIMASI SELESAI --}}
                             <td>
-                                    <input type="date"
+                                    <input type="datetime-local"
                                            name="estimasi_selesai"
                                            class="form-control form-control-sm"
-                                           value="{{ $item->estimasi_selesai ? $item->estimasi_selesai->format('Y-m-d') : '' }}">
+                                           step="60"
+                                           value="{{ $item->estimasi_selesai ? $item->estimasi_selesai->format('Y-m-d\\TH:i') : '' }}">
                             </td>
 
                             {{-- STATUS --}}

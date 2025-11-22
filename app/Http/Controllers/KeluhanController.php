@@ -40,7 +40,7 @@ class KeluhanController extends Controller
         $data = $request->validate([
             'id_peminjaman' => 'required|exists:peminjaman,id_peminjaman',
             'keluhan' => 'required|string',
-            'foto_keluhan' => 'nullable|file|mimes:jpg,jpeg,png,webp,mp4,mov,avi,webm|max:20480', // gambar atau video
+            'foto_keluhan' => 'required|file|mimes:jpg,jpeg,png,webp,mp4,mov,avi,webm,mp3|max:20480', // gambar, video, atau audio
         ]);
 
         $peminjaman = Peminjaman::findOrFail($data['id_peminjaman']);
@@ -97,12 +97,15 @@ class KeluhanController extends Controller
             ]);
 
             if ($keluhan->peminjaman?->barang) {
-                $keluhan->peminjaman->barang->update(['status' => 'service']);
+                $keluhan->peminjaman->barang->update(['status' => 'dalam_service']);
             }
 
             if (!$keluhan->service) {
+                $barangId = $keluhan->peminjaman?->id_barang;
                 \App\Models\Service::create([
                     'id_keluhan' => $keluhan->id_keluhan,
+                    'id_barang' => $barangId,
+                    'tgl_masuk_service' => now(),
                     'status' => 'mengantri',
                 ]);
             }
@@ -128,7 +131,7 @@ class KeluhanController extends Controller
                 $keluhan->service->update(['status' => 'selesai']);
             }
 
-            if ($keluhan->peminjaman?->barang && $keluhan->peminjaman->barang->status === 'service') {
+            if ($keluhan->peminjaman?->barang && $keluhan->peminjaman->barang->status === 'dalam_service') {
                 $keluhan->peminjaman->barang->update(['status' => 'tersedia']);
             }
         });

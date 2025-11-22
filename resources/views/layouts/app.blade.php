@@ -270,6 +270,22 @@
             color: #cbd5e1 !important;
         }
 
+        /* Sidebar contact mini block */
+        .sidebar-footer {
+            padding: 1rem 1.25rem;
+            border-top: 1px solid rgba(255,255,255,0.1);
+            color: rgba(255,255,255,0.9);
+        }
+
+        .sidebar-footer .contact-mini {
+            font-size: 0.85rem;
+            line-height: 1.3;
+        }
+
+        .sidebar-footer .contact-mini i {
+            width: 18px;
+        }
+
         /* Modern Buttons */
         .btn-modern {
             border-radius: var(--border-radius);
@@ -908,20 +924,31 @@
                         </a>
                     </li>
                     <li class="nav-item">
-                        <a class="nav-link {{ request()->routeIs('mahasiswa.riwayat.*') ? 'active' : '' }}" href="{{ route('mahasiswa.riwayat.index') }}">
-                            <i class="fas fa-history"></i>
-                            <span>Riwayat</span>
-                        </a>
-                    </li>
-                    <li class="nav-item">
-                        <a class="nav-link {{ request()->routeIs('profile.show') ? 'active' : '' }}" href="{{ route('profile.show') }}">
-                            <i class="fas fa-user"></i>
-                            <span>Profile</span>
-                        </a>
-                    </li>
-                </ul>
+                    <a class="nav-link {{ request()->routeIs('mahasiswa.riwayat.*') ? 'active' : '' }}" href="{{ route('mahasiswa.riwayat.index') }}">
+                        <i class="fas fa-history"></i>
+                        <span>Riwayat</span>
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link {{ request()->routeIs('profile.show') ? 'active' : '' }}" href="{{ route('profile.show') }}">
+                        <i class="fas fa-user"></i>
+                        <span>Profile</span>
+                    </a>
+                </li>
+            </ul>
+        </div>
+        <div class="sidebar-footer">
+            <div class="fw-semibold small mb-1">Kontak SIPKAM</div>
+            <div class="contact-mini d-flex align-items-start gap-2 mb-1">
+                <i class="fas fa-headset mt-1"></i>
+                <span>Call Center: 0812-3456-7890</span>
             </div>
-        </nav>
+            <div class="contact-mini d-flex align-items-start gap-2">
+                <i class="fas fa-envelope mt-1"></i>
+                <span>Email: SIPKAM@admin.ac.id</span>
+            </div>
+        </div>
+    </nav>
 
         <!-- Main Content Wrapper untuk Mahasiswa -->
         <div class="main-content-modern" id="main-content-mahasiswa">
@@ -992,42 +1019,6 @@
 
                 @yield('content')
 
-                {{-- Contact footer for mahasiswa views --}}
-                <footer class="contact-footer mt-5">
-                    <div class="d-flex flex-wrap justify-content-between align-items-center mb-3 gap-3">
-                        <div>
-                            <h6 class="mb-1">Butuh bantuan petugas?</h6>
-                            <p class="mb-0 text-muted">Hubungi tim SIPKAM kapan saja jika ada kendala peminjaman.</p>
-                        </div>
-                        <div class="d-flex align-items-center gap-2">
-                            <span class="badge bg-success bg-opacity-75 text-white"><i class="fas fa-circle me-1"></i>Aktif</span>
-                            <small class="text-muted">Respons cepat pada jam kerja</small>
-                        </div>
-                    </div>
-
-                    @php
-                        $contactList = [
-                            ['nama' => 'Call Center SIPKAM', 'nomor' => '0812-3456-7890', 'ikon' => 'fa-headset', 'warna' => 'primary'],
-                            ['nama' => 'Email SIPKAM', 'nomor' => 'SIPKAM@admin.ac.id', 'ikon' => 'fa-envelope', 'warna' => 'success'],
-                        ];
-                    @endphp
-
-                    <div class="row g-3">
-                        @foreach($contactList as $contact)
-                            <div class="col-md-4">
-                                <div class="contact-card d-flex align-items-center gap-3 h-100">
-                                    <div class="rounded-circle bg-{{ $contact['warna'] }} bg-opacity-10 text-{{ $contact['warna'] }} d-flex align-items-center justify-content-center" style="width:52px;height:52px;">
-                                        <i class="fas {{ $contact['ikon'] }}"></i>
-                                    </div>
-                                    <div>
-                                        <div class="fw-semibold">{{ $contact['nama'] }}</div>
-                                        <div class="text-muted">{{ $contact['nomor'] }}</div>
-                                    </div>
-                                </div>
-                            </div>
-                        @endforeach
-                    </div>
-                </footer>
             </main>
         </div>
     @endif

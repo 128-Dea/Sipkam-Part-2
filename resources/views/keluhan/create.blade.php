@@ -282,10 +282,10 @@
                 </div>
 
                 <div class="mb-3">
-                    <label class="form-label">Lampiran Bukti (Foto/Video - Opsional)</label>
-                    <input type="file" name="foto_keluhan" class="form-control" accept="image/*,video/*">
+                    <label class="form-label">Lampiran Bukti (Foto/Video/Audio) <span class="text-danger">*</span></label>
+                    <input type="file" name="foto_keluhan" class="form-control" accept="image/*,video/*,.mp3" required>
                     <small class="text-muted d-block mt-1">
-                        Format gambar (JPG, PNG, WEBP) atau video (MP4, MOV, WEBM) maks 20MB.
+                        Wajib unggah bukti. Format gambar (JPG, PNG, WEBP), video (MP4, MOV, WEBM), atau audio (MP3), maks 20MB.
                     </small>
                     @error('foto_keluhan')<small class="text-danger">{{ $message }}</small>@enderror
                 </div>

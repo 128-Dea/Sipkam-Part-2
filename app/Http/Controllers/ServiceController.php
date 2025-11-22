@@ -38,6 +38,11 @@ class ServiceController extends Controller
             'estimasi_selesai'   => 'nullable|date',
         ]);
 
+        // Jika belum ada tanggal masuk, set otomatis sekarang.
+        if (empty($data['tgl_masuk_service']) && !$service->tgl_masuk_service) {
+            $data['tgl_masuk_service'] = now();
+        }
+
         // Simpan data ke tabel service
         $service->fill($data);
         $service->save();
