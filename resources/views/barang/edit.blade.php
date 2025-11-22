@@ -6,7 +6,7 @@
     <a href="{{ route('barang.index') }}" class="btn btn-outline-secondary">Kembali</a>
 </div>
 
-<form method="POST" action="{{ route('barang.update', $barang->id_barang) }}" class="card border-0 shadow-sm" enctype="multipart/form-data">
+<form method="POST" action="{{ route('petugas.barang.update', $barang->id_barang) }}" class="card border-0 shadow-sm" enctype="multipart/form-data">
     @csrf
     @method('PUT')
     <div class="card-body">
