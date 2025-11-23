@@ -73,6 +73,21 @@ class PerpanjanganController extends Controller
             }
         });
 
+        // Notifikasi petugas tentang pengajuan perpanjangan
+        \App\Models\Notifikasi::create([
+            'id_barang'   => $peminjaman->id_barang,
+            'id_pengguna' => null, // target petugas
+            'jenis'       => 'perpanjangan_diajukan',
+            'pesan'       => sprintf(
+                'Perpanjangan diajukan oleh %s untuk %s (PINJ#%d) sampai %s. Status awal: %s.',
+                $peminjaman->pengguna->nama ?? 'Mahasiswa',
+                $peminjaman->barang->nama_barang ?? 'Barang',
+                $peminjaman->id_peminjaman,
+                $requestedEnd->translatedFormat('d M Y H:i'),
+                $conflictExists ? 'bentrok (otomatis ditolak)' : 'langsung disetujui'
+            ),
+        ]);
+
         $message = $conflictExists
             ? 'Perpanjangan ditolak otomatis karena jadwal bentrok dengan peminjaman lain.'
             : 'Perpanjangan disetujui otomatis karena jadwal kosong.';

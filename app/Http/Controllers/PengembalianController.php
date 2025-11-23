@@ -268,6 +268,7 @@ class PengembalianController extends Controller
             $dendaTerlambat    = $terlambatMenit * 1000; // 1000 per menit
 
             $totalDenda = $dendaTerlambat;
+            $totalDendaFormatted = 0;
 
             if (!empty($data['biaya_rusak'])) {
                 $totalDenda += $data['biaya_rusak'];
@@ -285,6 +286,20 @@ class PengembalianController extends Controller
                     'total_denda'       => $totalDenda,
                     'status_pembayaran' => 'belum',
                     'keterangan'        => 'Denda pengembalian barang',
+                ]);
+
+                // Notifikasi mahasiswa tentang denda yang harus dibayar
+                $totalDendaFormatted = number_format($totalDenda, 0, ',', '.');
+                \App\Models\Notifikasi::create([
+                    'id_barang'   => $peminjaman->id_barang,
+                    'id_pengguna' => $peminjaman->pengguna?->id_pengguna,
+                    'jenis'       => 'denda_baru',
+                    'pesan'       => sprintf(
+                        'Denda baru untuk %s (PINJ#%d) sebesar Rp %s. Segera lakukan pembayaran.',
+                        $peminjaman->barang->nama_barang ?? 'Barang',
+                        $peminjaman->id_peminjaman,
+                        $totalDendaFormatted
+                    ),
                 ]);
             }
 
