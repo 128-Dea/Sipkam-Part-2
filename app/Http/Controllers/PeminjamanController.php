@@ -88,6 +88,17 @@ class PeminjamanController extends Controller
 
         $pengguna = $this->ensurePengguna($user);
 
+        // Batasi maksimal 3 peminjaman aktif/booking per mahasiswa
+        $aktifCount = Peminjaman::where('id_pengguna', $pengguna?->id_pengguna)
+            ->whereIn('status', ['booking', 'berlangsung'])
+            ->count();
+
+        if ($aktifCount >= 3) {
+            return back()
+                ->withErrors(['id_barang' => 'Maksimal 3 peminjaman aktif per mahasiswa. Selesaikan atau kembalikan peminjaman lainnya terlebih dahulu.'])
+                ->withInput();
+        }
+
         $peminjaman = Peminjaman::create([
             'id_pengguna' => $pengguna?->id_pengguna,
             'id_barang'   => $data['id_barang'],
