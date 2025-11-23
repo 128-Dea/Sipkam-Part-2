@@ -279,7 +279,7 @@
                     <select name="id_barang" class="form-select" required>
                         <option value="">-- Pilih Barang --</option>
                         @foreach($barang as $item)
-                            <option value="{{ $item->id_barang }}" @selected(old('id_barang') == $item->id_barang)>
+                            <option value="{{ $item->id_barang }}" @selected(old('id_barang', $prefillBarangId ?? null) == $item->id_barang)>
                                 {{ $item->nama_barang }} (Stok: {{ $item->stok ?? '-' }} | Status: {{ ucfirst($item->status) }})
                             </option>
                         @endforeach

@@ -45,10 +45,12 @@ class PeminjamanController extends Controller
         return view('peminjaman.booking', ['booking' => $booking]);
     }
 
-    public function create()
+    public function create(Request $request)
     {
         $user = auth()->user();
         abort_unless($user && $user->role === 'mahasiswa', 403);
+
+        $prefillBarangId = $request->query('barang_id');
 
         $barang = Barang::with('kategori')
             ->where(function ($q) {
@@ -57,7 +59,10 @@ class PeminjamanController extends Controller
             ->where('status', 'tersedia')
             ->get();
 
-        return view('peminjaman.create', compact('barang'));
+        return view('peminjaman.create', [
+            'barang' => $barang,
+            'prefillBarangId' => $prefillBarangId,
+        ]);
     }
 
     public function store(Request $request)
