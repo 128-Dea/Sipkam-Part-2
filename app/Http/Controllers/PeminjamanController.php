@@ -7,6 +7,7 @@ use App\Models\Pengguna;
 use App\Models\Peminjaman;
 use App\Models\Qr;
 use Illuminate\Http\Request;
+use Illuminate\Support\Carbon;
 use Illuminate\Support\Str;
 
 class PeminjamanController extends Controller
@@ -69,6 +70,15 @@ class PeminjamanController extends Controller
             'waktu_akhir' => 'required|date|after:waktu_awal',
             'alasan'      => 'nullable|string',
         ]);
+
+        $waktuAwal = Carbon::parse($data['waktu_awal']);
+        $waktuAkhir = Carbon::parse($data['waktu_akhir']);
+
+        if ($waktuAwal->diffInMinutes($waktuAkhir) > 5 * 60) {
+            return back()
+                ->withErrors(['waktu_akhir' => 'Durasi peminjaman maksimal 5 jam. Ajukan perpanjangan jika perlu lebih lama.'])
+                ->withInput();
+        }
 
         $pengguna = $this->ensurePengguna($user);
 

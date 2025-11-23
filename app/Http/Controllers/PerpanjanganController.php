@@ -47,10 +47,14 @@ class PerpanjanganController extends Controller
             return back()->withErrors(['waktu_perpanjangan' => 'Waktu perpanjangan harus lebih lama dari waktu kembali saat ini.'])->withInput();
         }
 
+        if ($currentEnd->diffInMinutes($requestedEnd) > 5 * 60) {
+            return back()->withErrors(['waktu_perpanjangan' => 'Perpanjangan maksimal 5 jam per pengajuan.'])->withInput();
+        }
+
         // Cek konflik jadwal pada barang yang sama selama periode perpanjangan
         $conflictExists = Peminjaman::where('id_barang', $peminjaman->id_barang)
             ->where('id_peminjaman', '!=', $peminjaman->id_peminjaman)
-            ->where('status', 'berlangsung')
+            ->whereIn('status', ['berlangsung', 'booking'])
             ->where('waktu_awal', '<', $requestedEnd)
             ->where('waktu_akhir', '>', $currentEnd)
             ->exists();
