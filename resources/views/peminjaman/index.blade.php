@@ -4,10 +4,15 @@
 @php
     $user = auth()->user();
     $role = $user?->role;
-    $activeList = $peminjaman->filter(fn($p) => $p->status === 'berlangsung');
+
+    // Hanya dipakai petugas
+    $activeList = $role === 'petugas'
+        ? $peminjaman->filter(fn($p) => $p->status === 'berlangsung')
+        : collect();
 @endphp
 
 @if($role === 'petugas')
+    {{-- =================== VIEW PETUGAS: PEMINJAMAN AKTIF =================== --}}
     <div class="d-flex justify-content-between align-items-center mb-4">
         <div>
             <h1 class="h3 mb-1">Peminjaman Aktif</h1>
@@ -16,6 +21,7 @@
     </div>
 
     <div class="row g-3 mb-3">
+        {{-- Card Filter --}}
         <div class="col-lg-8">
             <div class="card border-0 shadow-sm h-100">
                 <div class="card-body d-flex flex-column">
@@ -50,12 +56,14 @@
                 </div>
             </div>
         </div>
+
+        {{-- Card Scan QR --}}
         <div class="col-lg-4">
             <div class="card border-0 shadow-sm h-100">
                 <div class="card-body d-flex flex-column">
                     <div class="d-flex align-items-center mb-3">
                         <div class="rounded-circle bg-success bg-opacity-10 text-success d-flex align-items-center justify-content-center me-2" style="width:44px;height:44px;">
-                            <i class="fas fa-qrcode"></i>
+                            🔍
                         </div>
                         <div>
                             <div class="fw-semibold">Scan QR Mahasiswa</div>
@@ -88,6 +96,7 @@
         </div>
     </div>
 
+    {{-- TABEL PEMINJAMAN AKTIF --}}
     <div class="card border-0 shadow-sm">
         <div class="card-header bg-white d-flex justify-content-between align-items-center">
             <div>
@@ -114,7 +123,7 @@
                     @forelse($activeList as $item)
                         @php
                             $badge = $item->status === 'berlangsung' ? 'info' : ($item->status === 'selesai' ? 'success' : 'secondary');
-                            $statusLabel = $item->status === 'berlangsung' ? 'Dipinjam' : ucfirst($item->status);
+                            $statusLabel = $item->status === 'berlangsung' ? 'Dipinjam ✔️' : ucfirst($item->status);
                         @endphp
                         <tr data-aktif-row
                             data-date="{{ \Carbon\Carbon::parse($item->waktu_awal)->toDateString() }}"
@@ -151,7 +160,7 @@
                                     </button>
                                     @if($item->qr)
                                         <button class="btn btn-sm btn-modern btn-modern-success btn-scan-attach" data-qr="{{ $item->qr->qr_code }}">
-                                            QR Scan
+                                            🔍 Scan
                                         </button>
                                     @endif
                                 </div>
@@ -167,7 +176,7 @@
         </div>
     </div>
 
-    {{-- Modal Detail --}}
+    {{-- MODAL DETAIL TRANSAKSI --}}
     <div class="modal fade" id="detailModal" tabindex="-1" aria-hidden="true">
         <div class="modal-dialog modal-dialog-centered modal-lg">
             <div class="modal-content">
@@ -225,6 +234,7 @@
         </div>
     </div>
 
+    {{-- SCRIPT QR SCAN & FILTER (KHUSUS PETUGAS) --}}
     <script src="https://unpkg.com/html5-qrcode"></script>
     <script>
         document.addEventListener('DOMContentLoaded', function () {
@@ -340,55 +350,29 @@
                 });
             }
 
-            function normalizeQr(qr) {
-                if (!qr) return '';
-                try {
-                    const parsed = JSON.parse(qr);
-                    if (parsed?.kode_transaksi) {
-                        return parsed.kode_transaksi;
-                    }
-                } catch (_) {}
-                return qr;
-            }
-
-            async function markAsScanned(qrCode) {
+            function markAsScanned(qrCode) {
                 if (!qrCode) return false;
-                const kodeTransaksi = normalizeQr(qrCode);
-
+                let kodeTransaksi = qrCode;
+                try {
+                    const parsed = JSON.parse(qrCode);
+                    if (parsed?.kode_transaksi) {
+                        kodeTransaksi = parsed.kode_transaksi;
+                    }
+                } catch (e) {
+                    // plain string, keep as is
+                }
+                let found = false;
                 document.querySelectorAll('[data-aktif-row]').forEach(row => {
-                    if (normalizeQr(row.getAttribute('data-qr')) === kodeTransaksi) {
+                    if (row.getAttribute('data-qr') === kodeTransaksi) {
                         const chip = row.querySelector('.status-chip');
                         if (chip) {
                             chip.className = 'badge bg-success status-chip';
-                            chip.textContent = 'Dipinjam';
+                            chip.textContent = 'Dipinjam ✔️';
                         }
+                        found = true;
                     }
                 });
-
-                try {
-                    const response = await fetch('{{ route('petugas.peminjaman.activate') }}', {
-                        method: 'POST',
-                        headers: {
-                            'Content-Type': 'application/json',
-                            'X-CSRF-TOKEN': '{{ csrf_token() }}',
-                        },
-                        body: JSON.stringify({ qr_code: qrCode }),
-                    });
-
-                    const data = await response.json().catch(() => ({}));
-                    if (!response.ok) {
-                        throw new Error(data.message || 'QR tidak valid.');
-                    }
-
-                    localStorage.setItem('sipkam-activated-qr', kodeTransaksi);
-                    showToast('Scan berhasil. Booking dipindah ke Peminjaman aktif.', 'success');
-                    setTimeout(() => window.location.reload(), 450);
-                    return true;
-                } catch (err) {
-                    console.error('Aktivasi gagal', err);
-                    showToast(err.message || 'Aktivasi gagal.', 'danger');
-                    return false;
-                }
+                return found;
             }
 
             scanBtn?.addEventListener('click', () => {
@@ -398,12 +382,13 @@
                     return;
                 }
 
-                markAsScanned(qrCode).then(ok => {
-                    if (!ok) {
-                        showToast('QR tidak ditemukan atau belum terdaftar.', 'danger');
-                    }
-                    scanInput.value = '';
-                });
+                const ok = markAsScanned(qrCode);
+                if (ok) {
+                    showToast('QR valid. Status berubah menjadi Dipinjam.', 'success');
+                } else {
+                    showToast('QR tidak ditemukan pada daftar aktif.', 'danger');
+                }
+                scanInput.value = '';
             });
 
             document.querySelectorAll('.btn-scan-attach').forEach(btn => {
@@ -414,26 +399,134 @@
             });
         });
     </script>
-@else
-    <div class="d-flex justify-content-between align-items-center mb-4">
-        <div>
-            <h1 class="h3 mb-1">Peminjaman Saya</h1>
-            <small class="text-muted">Pantau semua permintaan peminjaman Anda.</small>
-        </div>
-        <a href="{{ route('mahasiswa.peminjaman.create') }}" class="btn btn-primary">
-            Tambah Peminjaman
-        </a>
-    </div>
 
-    <div class="card border-0 shadow-sm">
-        <div class="card-body p-0">
+@else
+    {{-- =================== VIEW MAHASISWA: PEMINJAMAN SAYA =================== --}}
+
+    <style>
+        .peminjaman-page {
+            max-width: 1100px;
+            margin: 0 auto;
+            padding: 1.5rem 0 2.5rem;
+        }
+
+        .peminjaman-card {
+            border-radius: 18px;
+            border: 1px solid rgba(148,163,184,0.35);
+            background: rgba(255,255,255,0.98);
+            box-shadow: 0 18px 45px rgba(15,23,42,0.06);
+        }
+
+        body.sipkam-dark .peminjaman-card {
+            background: rgba(2,6,23,0.98);
+            border-color: rgba(148,163,184,0.7);
+        }
+
+        .btn-peminjaman-primary {
+            border-radius: 999px;
+            background: linear-gradient(90deg,#22c55e,#14b8a6);
+            border: none;
+            color: #ffffff;
+            font-weight: 600;
+            display: inline-flex;
+            align-items: center;
+            gap: 0.4rem;
+            padding-inline: 1.1rem;
+            padding-block: 0.55rem;
+            font-size: 0.9rem;
+            box-shadow: 0 18px 35px rgba(16,185,129,0.35);
+        }
+
+        .btn-peminjaman-primary:hover {
+            filter: brightness(1.05);
+            color: #ffffff;
+        }
+
+        body.sipkam-dark .btn-peminjaman-primary {
+            box-shadow: 0 18px 45px rgba(34,197,94,0.5);
+        }
+
+        .peminjaman-table thead th {
+            border-bottom: none;
+            font-size: 0.78rem;
+            text-transform: uppercase;
+            letter-spacing: .06em;
+            padding: 0.70rem 0.9rem;
+            background: rgba(15,23,42,0.03);
+        }
+
+        .peminjaman-table tbody td {
+            padding: 0.70rem 0.9rem;
+            vertical-align: middle;
+        }
+
+        .peminjaman-table th.col-kode,
+        .peminjaman-table td.col-kode {
+            width: 80px;
+            white-space: nowrap;
+        }
+
+        .peminjaman-table td small {
+            font-size: 0.78rem;
+        }
+
+        body.sipkam-dark .peminjaman-table thead th {
+            background: #020617;
+            color: #a7f3d0;
+            border-bottom: 1px solid rgba(31,41,55,0.9);
+        }
+
+        body.sipkam-dark .peminjaman-table tbody td {
+            color: #e5e7eb;
+        }
+
+        body.sipkam-dark .peminjaman-table tbody td small {
+            color: #9ca3af;
+        }
+
+        body.sipkam-dark .peminjaman-table .badge {
+            box-shadow: 0 0 12px rgba(34,197,94,0.45);
+        }
+
+        @media (max-width: 767.98px) {
+            .peminjaman-page {
+                margin: -16px -16px -24px -16px;
+                padding: 16px 16px 24px;
+            }
+        }
+
+        .peminjaman-card .peminjaman-table tbody td,
+        .peminjaman-card .peminjaman-table tbody td small {
+            color: #000000 !important;
+            font-weight: 500;
+        }
+    </style>
+
+    <div class="peminjaman-page">
+
+        {{-- HEADER --}}
+        <div class="d-flex justify-content-between align-items-center mb-3">
+            <div class="peminjaman-header-title">
+                <h1 class="h3 mb-1 fw-semibold">Daftar Peminjaman</h1>
+                <small>Pantau semua permintaan peminjaman Anda</small>
+            </div>
+
+            <a href="{{ route('mahasiswa.peminjaman.create') }}" class="btn btn-peminjaman-primary">
+                <i class="fas fa-plus"></i>
+                <span>Tambah Peminjaman</span>
+            </a>
+        </div>
+
+        {{-- CARD TABEL --}}
+        <div class="peminjaman-card">
             <div class="table-responsive">
-                <table class="table table-hover mb-0 align-middle">
-                    <thead class="table-light">
+                <table class="table peminjaman-table align-middle">
+                    <thead>
                         <tr>
-                            <th class="text-nowrap">Kode Peminjaman</th>
+                            <th class="col-kode text-nowrap">Kode</th>
                             <th>Barang</th>
-                            <th class="text-nowrap">Periode</th>
+                            <th class="text-nowrap">Tanggal Pinjam</th>
+                            <th class="text-nowrap">Estimasi Pengembalian</th>
                             <th>Status</th>
                             <th class="text-center">Aksi</th>
                         </tr>
@@ -442,31 +535,41 @@
                         @forelse($peminjaman as $item)
                             @php
                                 $status = $item->status;
-                                $badge = $status === 'berlangsung' ? 'info' : ($status === 'selesai' ? 'success' : 'danger');
+                                $badge = $status === 'berlangsung'
+                                    ? 'info'
+                                    : ($status === 'selesai' ? 'success' : 'danger');
                             @endphp
                             <tr>
-                                <td>#{{ $item->id_peminjaman }}</td>
+                                <td class="col-kode">#{{ $item->id_peminjaman }}</td>
                                 <td>{{ $item->barang->nama_barang ?? '-' }}</td>
-                                <td>
-                                    {{ \Carbon\Carbon::parse($item->waktu_awal)->format('d M Y H:i') }}<br>
-                                    <small class="text-muted">s/d {{ \Carbon\Carbon::parse($item->waktu_akhir)->format('d M Y H:i') }}</small>
+                                <td class="text-nowrap">
+                                    {{ \Carbon\Carbon::parse($item->waktu_awal)->format('d M Y H:i') }}
                                 </td>
-                                <td><span class="badge bg-{{ $badge }}">{{ ucfirst($status) }}</span></td>
+                                <td class="text-nowrap">
+                                    {{ \Carbon\Carbon::parse($item->waktu_akhir)->format('d M Y H:i') }}
+                                </td>
+                                <td>
+                                    <span class="badge bg-{{ $badge }}">{{ ucfirst($status) }}</span>
+                                </td>
                                 <td class="text-center">
-                                    <a href="{{ route('mahasiswa.peminjaman.show', $item->id_peminjaman) }}" class="btn btn-sm btn-outline-primary">
+                                    <a href="{{ route('mahasiswa.peminjaman.show', $item->id_peminjaman) }}"
+                                       class="btn btn-sm btn-outline-primary">
                                         Detail
                                     </a>
                                 </td>
                             </tr>
                         @empty
                             <tr>
-                                <td colspan="5" class="text-center text-muted py-4">Belum ada data peminjaman.</td>
+                                <td colspan="6" class="text-center text-muted py-4">
+                                    Belum ada data peminjaman.
+                                </td>
                             </tr>
                         @endforelse
                     </tbody>
                 </table>
             </div>
         </div>
+
     </div>
 @endif
 @endsection

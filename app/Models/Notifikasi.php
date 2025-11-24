@@ -18,6 +18,7 @@ class Notifikasi extends Model
         'id_pengguna',
         'pesan',
         'jenis',
+        'dibaca',
     ];
 
     public function barang(): BelongsTo

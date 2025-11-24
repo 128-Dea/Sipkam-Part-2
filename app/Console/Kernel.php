@@ -7,9 +7,7 @@ use Illuminate\Foundation\Console\Kernel as ConsoleKernel;
 
 class Kernel extends ConsoleKernel
 {
-    /**
-     * Register the commands for the application.
-     */
+   
     protected function commands(): void
     {
         $this->load(__DIR__ . '/Commands');
@@ -17,11 +15,12 @@ class Kernel extends ConsoleKernel
         require base_path('routes/console.php');
     }
 
-    /**
-     * Define the application's command schedule.
-     */
     protected function schedule(Schedule $schedule): void
     {
+        //  1. Notifikasi 15 menit sebelum peminjaman habis
         $schedule->command('peminjaman:reminder-expiry')->everyMinute();
+
+        //  2. Notifikasi untuk peminjaman terlambat
+        $schedule->command('peminjaman:notify-overdue')->everyFiveMinutes();
     }
 }

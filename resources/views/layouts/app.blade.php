@@ -798,9 +798,21 @@
                         </a>
                     </li>
                     <li class="nav-item">
+                        @php
+                            $hasDibaca = \Illuminate\Support\Facades\Schema::hasColumn('notifikasi', 'dibaca');
+                            $notifPetugasCount = \App\Models\Notifikasi::where(function($q){
+                                $q->whereNull('id_pengguna')
+                                  ->orWhere('jenis', 'perpanjangan_diajukan');
+                            })
+                            ->when($hasDibaca, fn($q) => $q->where('dibaca', false))
+                            ->count();
+                        @endphp
                         <a class="nav-link {{ request()->routeIs('petugas.notifikasi.*') ? 'active' : '' }}" href="{{ route('petugas.notifikasi.index') }}">
                             <i class="fas fa-bell"></i>
                             <span>Notifikasi</span>
+                            @if($notifPetugasCount > 0)
+                                <span class="badge bg-warning text-dark ms-2">{{ $notifPetugasCount }}</span>
+                            @endif
                         </a>
                     </li>
 
@@ -918,6 +930,31 @@
                         </a>
                     </li>
                     <li class="nav-item">
+                        @php
+                            $user = auth()->user();
+                            $penggunaMahasiswa = null;
+                            if ($user) {
+                                $penggunaMahasiswa = \App\Models\Pengguna::find($user->id);
+                                if (!$penggunaMahasiswa && $user->email) {
+                                    $penggunaMahasiswa = \App\Models\Pengguna::where('email', $user->email)->first();
+                                }
+                            }
+                            $hasDibaca = \Illuminate\Support\Facades\Schema::hasColumn('notifikasi', 'dibaca');
+                            $notifMahasiswaCount = $penggunaMahasiswa
+                                ? \App\Models\Notifikasi::where('id_pengguna', $penggunaMahasiswa->id_pengguna)
+                                    ->when($hasDibaca, fn($q) => $q->where('dibaca', false))
+                                    ->count()
+                                : 0;
+                        @endphp
+                        <a class="nav-link {{ request()->routeIs('mahasiswa.notifikasi.*') ? 'active' : '' }}" href="{{ route('mahasiswa.notifikasi.index') }}">
+                            <i class="fas fa-bell"></i>
+                            <span>Notifikasi</span>
+                            @if($notifMahasiswaCount > 0)
+                                <span class="badge bg-warning text-dark ms-2">{{ $notifMahasiswaCount }}</span>
+                            @endif
+                        </a>
+                    </li>
+                    <li class="nav-item">
                         <a class="nav-link {{ request()->routeIs('mahasiswa.keluhan.*') ? 'active' : '' }}" href="{{ route('mahasiswa.keluhan.index') }}">
                             <i class="fas fa-exclamation-triangle"></i>
                             <span>Keluhan</span>
@@ -938,16 +975,42 @@
             </ul>
         </div>
         <div class="sidebar-footer">
-            <div class="fw-semibold small mb-1">Kontak SIPKAM</div>
+            <div class="fw-semibold small mb-1 kontak-title">Kontak SIPKAM</div>
             <div class="contact-mini d-flex align-items-start gap-2 mb-1">
                 <i class="fas fa-headset mt-1"></i>
-                <span>Call Center: 0812-3456-7890</span>
+                <span class="kontak-text">Call Center: 0812-3456-7890</span>
             </div>
             <div class="contact-mini d-flex align-items-start gap-2">
                 <i class="fas fa-envelope mt-1"></i>
-                <span>Email: SIPKAM@admin.ac.id</span>
+                <span class="kontak-text">Email: SIPKAM@admin.ac.id</span>
             </div>
         </div>
+
+        <style>
+            /* Hide kontak text by default, show only icons */
+            #sidebar-mahasiswa .sidebar-footer .kontak-text,
+            #sidebar-mahasiswa .sidebar-footer .kontak-title {
+                display: none;
+                transition: all 0.3s ease;
+                white-space: nowrap;
+            }
+
+            /* Show kontak text on sidebar hover */
+            #sidebar-mahasiswa:hover .sidebar-footer .kontak-text,
+            #sidebar-mahasiswa:hover .sidebar-footer .kontak-title {
+                display: inline;
+            }
+
+            /* Adjust sidebar-footer padding when collapsed */
+            #sidebar-mahasiswa {
+                transition: width 0.3s ease;
+            }
+
+            /* Make sure sidebar-footer content fits nicely on hover */
+            #sidebar-mahasiswa:hover .sidebar-footer {
+                padding-left: 1rem;
+            }
+        </style>
     </nav>
 
         <!-- Main Content Wrapper untuk Mahasiswa -->

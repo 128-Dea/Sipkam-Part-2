@@ -122,7 +122,7 @@ class PeminjamanController extends Controller
             ->with('success', 'Peminjaman berhasil dibuat.');
     }
 
-    public function show(Peminjaman $peminjaman)
+public function show(Peminjaman $peminjaman)
     {
         $user = auth()->user();
 

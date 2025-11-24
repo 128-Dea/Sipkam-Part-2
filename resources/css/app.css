@@ -1,3 +1,68 @@
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
+/* Glassy backdrop for detail/overlay views */
+body {
+    --detail-accent: rgba(99, 102, 241, 0.18);
+    --detail-accent-2: rgba(129, 140, 248, 0.22);
+    --detail-layer: rgba(15, 23, 42, 0.28);
+}
+
+body[data-detail-context="peminjaman"] {
+    --detail-accent: rgba(99, 102, 241, 0.2);
+    --detail-accent-2: rgba(79, 70, 229, 0.24);
+}
+
+body[data-detail-context="riwayat"],
+body[data-detail-context="pengembalian"] {
+    --detail-accent: rgba(59, 130, 246, 0.18);
+    --detail-accent-2: rgba(56, 189, 248, 0.22);
+}
+
+body[data-detail-context="keluhan"] {
+    --detail-accent: rgba(239, 68, 68, 0.2);
+    --detail-accent-2: rgba(248, 113, 113, 0.24);
+}
+
+.detail-overlay--peminjaman {
+    --detail-accent: rgba(99, 102, 241, 0.2);
+    --detail-accent-2: rgba(79, 70, 229, 0.24);
+}
+
+.detail-overlay--keluhan {
+    --detail-accent: rgba(239, 68, 68, 0.2);
+    --detail-accent-2: rgba(248, 113, 113, 0.24);
+}
+
+.detail-overlay {
+    background:
+        linear-gradient(180deg, rgba(255, 255, 255, 0.22), rgba(248, 250, 252, 0.72)),
+        rgba(15, 23, 42, 0.35);
+    backdrop-filter: blur(10px);
+    -webkit-backdrop-filter: blur(10px);
+    z-index: 1050;
+    overflow-y: auto;
+}
+
+.detail-overlay::before {
+    content: none;
+}
+
+.detail-overlay::after {
+    content: none;
+}
+
+.detail-overlay > * {
+    position: relative;
+    z-index: 1;
+}
+
+.modal-backdrop.show {
+    background:
+        radial-gradient(circle at 16% 16%, var(--detail-accent, rgba(99, 102, 241, 0.18)), transparent 38%),
+        radial-gradient(circle at 84% 12%, var(--detail-accent-2, rgba(79, 70, 229, 0.24)), transparent 32%),
+        linear-gradient(135deg, rgba(15, 23, 42, 0.35), rgba(15, 23, 42, 0.22));
+    backdrop-filter: blur(10px);
+    -webkit-backdrop-filter: blur(10px);
+    opacity: 1 !important;
+}

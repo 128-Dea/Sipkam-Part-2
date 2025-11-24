@@ -8,31 +8,60 @@
     $waktuAkhir  = $peminjaman->waktu_akhir ?? null;
     $statusPinjam = $peminjaman->status ?? '-';
 @endphp
-<div class="d-flex justify-content-between mb-4">
-    <div>
-        <h1 class="h3 mb-1">Detail Riwayat</h1>
-        <small class="text-muted">Riwayat #{{ $riwayat->id_riwayat }}</small>
-    </div>
-    <a href="{{ route('mahasiswa.riwayat.index') }}" class="btn btn-outline-secondary">Kembali</a>
-</div>
+<script>
+    document.body.dataset.detailContext = 'riwayat';
+</script>
 
-<div class="row g-4">
-    <div class="col-md-6">
-        <div class="card border-0 shadow-sm">
-            <div class="card-body">
-                <h5 class="card-title">Informasi Barang</h5>
-                <p class="mb-1"><strong>Nama:</strong> {{ $barang->nama_barang ?? '-' }}</p>
-                <p class="mb-1"><strong>Kode:</strong> {{ $barang->kode_barang ?? '-' }}</p>
-                <p class="mb-0"><strong>Status:</strong> {{ ucfirst($statusPinjam) }}</p>
-            </div>
-        </div>
-    </div>
-    <div class="col-md-6">
-        <div class="card border-0 shadow-sm">
-            <div class="card-body">
-                <h5 class="card-title">Waktu</h5>
-                <p class="mb-1">Mulai: {{ optional($waktuAwal ? \Carbon\Carbon::parse($waktuAwal) : null)->format('d M Y H:i') ?? '-' }}</p>
-                <p class="mb-0">Selesai: {{ optional($waktuAkhir ? \Carbon\Carbon::parse($waktuAkhir) : null)->format('d M Y H:i') ?? '-' }}</p>
+<div
+    class="position-fixed top-0 start-0 w-100 h-100 d-flex align-items-start align-items-md-center py-4 detail-overlay"
+    style="overflow-y:auto;"
+>
+    <div class="container px-3 px-md-0 my-3 my-md-4">
+        <div class="d-flex justify-content-center">
+            <div class="card shadow-lg border-0 w-100" style="max-width: 900px; border-radius: 18px;">
+                <div class="card-body p-4 p-md-5" style="max-height: calc(100vh - 120px); overflow-y: auto;">
+                    <div class="d-flex justify-content-between align-items-start mb-4">
+                        <div>
+                            <h2 class="h4 mb-1">Detail Riwayat</h2>
+                            <small class="text-muted">Riwayat #{{ $riwayat->id_riwayat }}</small>
+                        </div>
+                        <a href="{{ route('mahasiswa.riwayat.index') }}" class="btn btn-outline-secondary btn-sm">Tutup</a>
+                    </div>
+
+                    <div class="row g-3 mb-3">
+                        <div class="col-md-6">
+                            <div class="border rounded-3 bg-white p-3 h-100">
+                                <p class="text-muted small fw-semibold mb-2">Informasi Barang</p>
+                                <div class="fw-semibold mb-1">{{ $barang->nama_barang ?? '-' }}</div>
+                                <div class="text-muted">{{ $barang->kode_barang ?? '-' }}</div>
+                                <div class="mt-2">
+                                    <span class="badge bg-{{ $statusPinjam === 'selesai' ? 'success' : ($statusPinjam === 'berlangsung' ? 'info' : 'secondary') }}">
+                                        {{ ucfirst($statusPinjam) }}
+                                    </span>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="border rounded-3 bg-white p-3 h-100">
+                                <p class="text-muted small fw-semibold mb-2">Waktu</p>
+                                <div class="text-muted small mb-1">Mulai</div>
+                                <div class="fw-semibold mb-3">{{ optional($waktuAwal ? \Carbon\Carbon::parse($waktuAwal) : null)->format('d M Y H:i') ?? '-' }}</div>
+                                <div class="text-muted small mb-1">Selesai</div>
+                                <div class="fw-semibold">{{ optional($waktuAkhir ? \Carbon\Carbon::parse($waktuAkhir) : null)->format('d M Y H:i') ?? '-' }}</div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="border rounded-3 bg-white p-3">
+                        <p class="text-muted small fw-semibold mb-2">Ringkasan</p>
+                        <div class="fw-semibold mb-1">
+                            Pengembalian tercatat. Status peminjaman: {{ ucfirst($statusPinjam) }}.
+                        </div>
+                        <div class="text-muted">
+                            Barang: {{ $barang->nama_barang ?? '-' }} ({{ $barang->kode_barang ?? '-' }}).
+                        </div>
+                    </div>
+                </div>
             </div>
         </div>
     </div>

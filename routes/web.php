@@ -53,7 +53,7 @@ Route::middleware(['auth', 'role:mahasiswa'])
         Route::resource('peminjaman', PeminjamanController::class);
         Route::resource('keluhan', KeluhanController::class)->except(['edit', 'update', 'destroy']);
         Route::resource('perpanjangan', PerpanjanganController::class)->only(['index', 'create', 'store', 'update']);
-        Route::resource('notifikasi', NotifikasiController::class)->only(['index']);
+        Route::resource('notifikasi', NotifikasiController::class)->only(['index', 'destroy']);
         Route::get('/qr/{id}', [QrController::class, 'show'])->name('qr.show');
         Route::get('/riwayat', [RiwayatController::class, 'index'])->name('riwayat.index');
         Route::get('/riwayat/{riwayat}', [RiwayatController::class, 'show'])->name('riwayat.show');
@@ -111,7 +111,7 @@ Route::get('pengembalian/{peminjaman}/konfirmasi', [PengembalianController::clas
         Route::resource('keluhan', KeluhanController::class)->only(['index', 'show']);
         Route::post('keluhan/{keluhan}/service', [KeluhanController::class, 'kirimService'])->name('keluhan.service');
         Route::post('keluhan/{keluhan}/selesai', [KeluhanController::class, 'tandaiSelesai'])->name('keluhan.selesai');
-        Route::resource('notifikasi', NotifikasiController::class)->only(['index']);
+        Route::resource('notifikasi', NotifikasiController::class)->only(['index', 'destroy']);
         Route::get('riwayat-transaksi', [\App\Http\Controllers\RiwayatController::class, 'petugas'])->name('riwayat.index');
         Route::get('riwayat-transaksi/export/csv', [\App\Http\Controllers\RiwayatController::class, 'exportCsv'])->name('riwayat.export.csv');
         Route::get('riwayat-transaksi/export/html', [\App\Http\Controllers\RiwayatController::class, 'exportHtml'])->name('riwayat.export.html');

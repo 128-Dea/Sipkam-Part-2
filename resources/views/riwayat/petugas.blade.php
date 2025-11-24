@@ -149,6 +149,8 @@
 
 <script>
     document.addEventListener('DOMContentLoaded', function () {
+        document.body.dataset.detailContext = 'riwayat';
+
         const params = new URLSearchParams(window.location.search);
         const inputs = {
             kondisi: document.getElementById('filter-kondisi'),

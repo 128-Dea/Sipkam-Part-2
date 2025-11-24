@@ -19,7 +19,13 @@ class PerpanjanganController extends Controller
 
     public function create()
     {
-        $peminjaman = Peminjaman::with('pengguna')->get();
+        $authPenggunaId = $this->resolveAuthPenggunaId();
+
+        $peminjaman = Peminjaman::with(['pengguna', 'barang'])
+            ->where('id_pengguna', $authPenggunaId)
+            ->whereIn('status', ['berlangsung', 'booking'])
+            ->whereDoesntHave('pengembalian')
+            ->get();
 
         return view('perpanjangan.create', compact('peminjaman'));
     }
@@ -76,7 +82,7 @@ class PerpanjanganController extends Controller
         // Notifikasi petugas tentang pengajuan perpanjangan
         \App\Models\Notifikasi::create([
             'id_barang'   => $peminjaman->id_barang,
-            'id_pengguna' => null, // target petugas
+            'id_pengguna' => $peminjaman->pengguna?->id_pengguna, // simpan siapa pengaju agar nama terbaca
             'jenis'       => 'perpanjangan_diajukan',
             'pesan'       => sprintf(
                 'Perpanjangan diajukan oleh %s untuk %s (PINJ#%d) sampai %s. Status awal: %s.',

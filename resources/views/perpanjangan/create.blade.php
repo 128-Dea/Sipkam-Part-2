@@ -8,15 +8,21 @@
     <div class="card-body">
         <div class="mb-3">
             <label class="form-label">Peminjaman</label>
-            <select name="id_peminjaman" class="form-select" required>
+            <select name="id_peminjaman" id="select-peminjaman" class="form-select" required>
                 <option value="">-- Pilih peminjaman --</option>
                 @foreach($peminjaman as $item)
-                    <option value="{{ $item->id_peminjaman }}" @selected(old('id_peminjaman')==$item->id_peminjaman)>
+                    <option
+                        value="{{ $item->id_peminjaman }}"
+                        data-end="{{ \Carbon\Carbon::parse($item->waktu_akhir)->format('Y-m-d\TH:i') }}"
+                        data-end-display="{{ \Carbon\Carbon::parse($item->waktu_akhir)->translatedFormat('d M Y H:i') }}"
+                        @selected(old('id_peminjaman')==$item->id_peminjaman)
+                    >
                         {{ $item->barang->nama_barang ?? 'Barang' }} - {{ $item->pengguna->nama ?? 'Pengguna' }}
                     </option>
                 @endforeach
             </select>
             @error('id_peminjaman')<small class="text-danger">{{ $message }}</small>@enderror
+            <small id="current-deadline" class="text-muted d-block mt-1"></small>
         </div>
         <div class="mb-3">
             <label class="form-label">Tanggal Pengajuan</label>
@@ -25,7 +31,7 @@
         </div>
         <div class="mb-3">
             <label class="form-label">Perpanjangan Sampai</label>
-            <input type="datetime-local" name="waktu_perpanjangan" value="{{ old('waktu_perpanjangan') }}" class="form-control" required>
+            <input type="datetime-local" name="waktu_perpanjangan" id="waktu-perpanjangan" value="{{ old('waktu_perpanjangan') }}" class="form-control" required>
             @error('waktu_perpanjangan')<small class="text-danger">{{ $message }}</small>@enderror
         </div>
         <div class="mb-3">
@@ -39,4 +45,40 @@
         <button class="btn btn-primary" type="submit">Kirim Pengajuan</button>
     </div>
 </form>
+
+@push('scripts')
+<script>
+document.addEventListener('DOMContentLoaded', function () {
+    const select = document.getElementById('select-peminjaman');
+    const endInfo = document.getElementById('current-deadline');
+    const endInput = document.getElementById('waktu-perpanjangan');
+
+    const applyDeadline = () => {
+        const option = select.options[select.selectedIndex];
+        const endValue = option ? option.dataset.end : null;
+        const endDisplay = option ? option.dataset.endDisplay : '';
+
+        if (endInfo) {
+            endInfo.textContent = endDisplay ? `Batas saat ini: ${endDisplay}` : '';
+        }
+
+        if (endValue && endInput) {
+            endInput.min = endValue;
+            // Jika belum ada nilai di input, set default 10 menit setelah batas sekarang
+            if (!endInput.value) {
+                const base = new Date(endValue);
+                base.setMinutes(base.getMinutes() + 10);
+                const iso = base.toISOString().slice(0,16);
+                endInput.value = iso;
+            }
+        }
+    };
+
+    if (select) {
+        select.addEventListener('change', applyDeadline);
+        applyDeadline();
+    }
+});
+</script>
+@endpush
 @endsection

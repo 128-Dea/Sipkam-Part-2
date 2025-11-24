@@ -78,8 +78,17 @@
                         </div>
                         <div class="col-md-6">
                             <label class="form-label form-label-modern">Waktu Pengembalian</label>
-                            <input type="datetime-local" name="waktu_pengembalian" value="{{ now()->format('Y-m-d\TH:i') }}" class="form-control form-control-modern" />
-                            <small class="text-muted">Terlambat: {{ $terlambatMenit }} menit (Rp {{ number_format($terlambatMenit * 1000, 0, ',', '.') }})</small>
+                            <input
+                                type="datetime-local"
+                                name="waktu_pengembalian"
+                                id="waktu-pengembalian"
+                                class="form-control form-control-modern"
+                                data-deadline="{{ $deadline->format('Y-m-d\TH:i') }}"
+                                style="appearance: none; -webkit-appearance: none; -moz-appearance: textfield;"
+                            />
+                            <small class="text-muted" id="lateness-info">
+                                Terlambat: {{ $terlambatMenit }} menit (Rp {{ number_format($terlambatMenit * 1000, 0, ',', '.') }})
+                            </small>
                         </div>
                         <div class="col-md-6" id="field-biaya-rusak" style="display:none;">
                             <label class="form-label form-label-modern">Biaya Denda Kerusakan</label>
@@ -117,6 +126,16 @@
     </div>
 </div>
 
+<style>
+    #waktu-pengembalian::-webkit-calendar-picker-indicator,
+    #waktu-pengembalian::-webkit-inner-spin-button {
+        display: none;
+    }
+    #waktu-pengembalian {
+        caret-color: transparent;
+    }
+</style>
+
 <script>
     document.addEventListener('DOMContentLoaded', function () {
         const kondisi = document.getElementById('kondisi');
@@ -125,6 +144,8 @@
         const fieldBiayaRusak = document.getElementById('field-biaya-rusak');
         const fieldBiayaHilang = document.getElementById('field-biaya-hilang');
         const suggestRusak = document.getElementById('suggest-rusak');
+        const waktuInput = document.getElementById('waktu-pengembalian');
+        const latenessInfo = document.getElementById('lateness-info');
 
         // Saran denda berdasarkan kategori barang (kasar)
         const kategori = '{{ strtolower($peminjaman->barang->kategori->nama ?? '') }}';
@@ -132,6 +153,27 @@
         if (kategori.includes('elektronik')) saran = 150000;
         if (kategori.includes('laboratorium')) saran = 200000;
         suggestRusak.textContent = saran.toLocaleString('id-ID');
+
+        function formatDateTimeLocal(date) {
+            const pad = (n) => String(n).padStart(2, '0');
+            return `${date.getFullYear()}-${pad(date.getMonth() + 1)}-${pad(date.getDate())}T${pad(date.getHours())}:${pad(date.getMinutes())}`;
+        }
+
+        function updateLateness() {
+            if (!waktuInput || !latenessInfo) return;
+            const deadlineStr = waktuInput.dataset.deadline;
+            const deadline = deadlineStr ? new Date(deadlineStr.replace(' ', 'T')) : null;
+
+            const now = new Date();
+            waktuInput.value = formatDateTimeLocal(now);
+
+            if (!deadline) return;
+
+            const diffMs = now.getTime() - deadline.getTime();
+            const diffMinutes = Math.max(0, Math.ceil(diffMs / 60000));
+            const denda = diffMinutes * 1000;
+            latenessInfo.textContent = `Terlambat: ${diffMinutes} menit (Rp ${denda.toLocaleString('id-ID')})`;
+        }
 
         function toggleFields() {
             const val = kondisi.value;
@@ -146,6 +188,23 @@
 
         kondisi.addEventListener('change', toggleFields);
         toggleFields();
+
+        updateLateness();
+        // Segarkan keterlambatan per 5 detik
+        setInterval(updateLateness, 5000);
+
+        // Rehitung jika user mengubah manual
+        if (waktuInput) {
+            waktuInput.addEventListener('input', updateLateness);
+        }
+
+        // Pastikan saat submit, waktu terisi detik-ini
+        const form = document.querySelector('form[action*="pengembalian"][method="POST"]');
+        if (form) {
+            form.addEventListener('submit', function() {
+                updateLateness();
+            });
+        }
     });
 </script>
 @endsection

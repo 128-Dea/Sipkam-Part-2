@@ -6,9 +6,7 @@ use Illuminate\Support\Facades\Schema;
 
 return new class extends Migration
 {
-    /**
-     * Run the migrations.
-     */
+
     public function up(): void
     {
         Schema::create('peminjaman', function (Blueprint $table) {
@@ -35,9 +33,7 @@ return new class extends Migration
         // Catatan: Trigger MySQL yang berhubungan dengan tabel peminjaman tidak dibuat otomatis oleh migration Laravel ini.
     }
 
-    /**
-     * Reverse the migrations.
-     */
+
     public function down(): void
     {
         Schema::dropIfExists('peminjaman');
