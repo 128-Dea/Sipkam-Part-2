@@ -3,6 +3,13 @@
 @php($statistik = $statistik ?? [])
 @php($aktivitas = $aktivitas ?? [])
 @php($barangDipinjam = $barangDipinjam ?? collect())
+@php($riwayatSelesai = $statistik['selesai'] ?? 0)
+@php($aktif = $statistik['aktif'] ?? 0)
+@php($menunggu = $statistik['menunggu'] ?? 0)
+@php($keluhanDiajukan = $statistik['keluhan'] ?? ($statistik['keluhan_diajukan'] ?? 0))
+@php($totalDenda = $statistik['total_denda'] ?? 0)
+@php($totalPeminjaman = $statistik['total'] ?? ($aktif + $menunggu + $riwayatSelesai))
+@php($persentaseSelesai = $totalPeminjaman > 0 ? number_format(($riwayatSelesai / $totalPeminjaman) * 100, 0) : 0)
 
 @section('content')
 
@@ -238,6 +245,36 @@
         color: var(--sipkam-accent-pill);
     }
 
+    /* ====== STATISTIK REKAP ====== */
+    .stat-overview {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+        gap: 12px;
+    }
+    .stat-overview .item {
+        padding: 12px 14px;
+        border-radius: 14px;
+        background: rgba(248, 250, 252, 0.98);
+        box-shadow: 0 10px 24px rgba(15, 23, 42, 0.06);
+    }
+    .stat-overview .label {
+        font-size: .78rem;
+        text-transform: uppercase;
+        letter-spacing: .08em;
+        color: var(--sipkam-text-muted);
+        margin-bottom: 4px;
+        display: block;
+    }
+    .stat-overview .value {
+        font-size: 1.2rem;
+        font-weight: 700;
+    }
+    body.sipkam-dark .stat-overview .item {
+        background: #020617;
+        border: 1px solid rgba(31, 41, 55, 0.95);
+        box-shadow: 0 14px 32px rgba(0, 0, 0, 0.8);
+    }
+
     /* ====== MINI CARD / SHORTCUT ====== */
     .shortcut-grid {
         display: grid;
@@ -427,39 +464,7 @@
 
     {{-- STATISTIK --}}
     <div class="row mb-4">
-        <div class="col-xl-4 col-md-6 mb-4">
-            <div class="card card-modern h-100 border-0 stat-card">
-                <div class="card-body d-flex align-items-center">
-                    <div class="flex-grow-1">
-                        <div class="d-flex justify-content-between align-items-center mb-1">
-                            <span class="label">Peminjaman Aktif</span>
-                            <span class="stat-pill stat-pill-aktif">Aktif</span>
-                        </div>
-                        <div class="value">{{ $statistik['aktif'] ?? 0 }}</div>
-                    </div>
-                    <div class="ms-3">
-                        <i class="fas fa-hand-holding fa-2x text-primary"></i>
-                    </div>
-                </div>
-            </div>
-        </div>
-        <div class="col-xl-4 col-md-6 mb-4">
-            <div class="card card-modern h-100 border-0 stat-card">
-                <div class="card-body d-flex align-items-center">
-                    <div class="flex-grow-1">
-                        <div class="d-flex justify-content-between align-items-center mb-1">
-                            <span class="label">Menunggu Persetujuan</span>
-                            <span class="stat-pill stat-pill-menunggu">Pending</span>
-                        </div>
-                        <div class="value">{{ $statistik['menunggu'] ?? 0 }}</div>
-                    </div>
-                    <div class="ms-3">
-                        <i class="fas fa-clock fa-2x text-warning"></i>
-                    </div>
-                </div>
-            </div>
-        </div>
-        <div class="col-xl-4 col-md-6 mb-4">
+        <div class="col-xl-3 col-md-6 mb-4">
             <div class="card card-modern h-100 border-0 stat-card">
                 <div class="card-body d-flex align-items-center">
                     <div class="flex-grow-1">
@@ -467,109 +472,104 @@
                             <span class="label">Riwayat Selesai</span>
                             <span class="stat-pill stat-pill-selesai">Selesai</span>
                         </div>
-                        <div class="value">{{ $statistik['selesai'] ?? 0 }}</div>
+                        <div class="value">{{ $riwayatSelesai }}</div>
                     </div>
                     <div class="ms-3">
-                        <i class="fas fa-check-circle fa-2x text-success"></i>
+                        <i class="fas fa-check-double fa-2x text-success"></i>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="col-xl-3 col-md-6 mb-4">
+            <div class="card card-modern h-100 border-0 stat-card">
+                <div class="card-body d-flex align-items-center">
+                    <div class="flex-grow-1">
+                        <div class="d-flex justify-content-between align-items-center mb-1">
+                            <span class="label">Total Peminjaman</span>
+                            <span class="stat-pill stat-pill-aktif">Total</span>
+                        </div>
+                        <div class="value">{{ $totalPeminjaman }}</div>
+                    </div>
+                    <div class="ms-3">
+                        <i class="fas fa-hand-holding fa-2x text-primary"></i>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="col-xl-3 col-md-6 mb-4">
+            <div class="card card-modern h-100 border-0 stat-card">
+                <div class="card-body d-flex align-items-center">
+                    <div class="flex-grow-1">
+                        <div class="d-flex justify-content-between align-items-center mb-1">
+                            <span class="label">Keluhan Diajukan</span>
+                            <span class="stat-pill stat-pill-menunggu">Keluhan</span>
+                        </div>
+                        <div class="value">{{ $keluhanDiajukan }}</div>
+                    </div>
+                    <div class="ms-3">
+                        <i class="fas fa-comments fa-2x text-warning"></i>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="col-xl-3 col-md-6 mb-4">
+            <div class="card card-modern h-100 border-0 stat-card">
+                <div class="card-body d-flex align-items-center">
+                    <div class="flex-grow-1">
+                        <div class="d-flex justify-content-between align-items-center mb-1">
+                            <span class="label">Total Denda</span>
+                            <span class="stat-pill stat-pill-selesai">IDR</span>
+                        </div>
+                        <div class="value">Rp {{ number_format($totalDenda, 0, ',', '.') }}</div>
+                    </div>
+                    <div class="ms-3">
+                        <i class="fas fa-wallet fa-2x text-danger"></i>
                     </div>
                 </div>
             </div>
         </div>
     </div>
 
-    {{-- QUICK ACTIONS --}}
+    {{-- REKAP STATISTIK --}}
     <div class="row mb-4">
-        <div class="col-lg-6 mb-4">
+        <div class="col-12">
             <div class="card card-modern h-100">
-                <div class="card-header">
-                    <h5 class="mb-0 fw-bold text-primary">
-                        <i class="fas fa-plus-circle me-2"></i>Peminjaman & Keluhan
-                    </h5>
-                </div>
-                <div class="card-body">
-                    <div class="shortcut-grid">
-                        <a href="{{ route('mahasiswa.peminjaman.create') }}" class="shortcut-card">
-                            <div class="shortcut-icon shortcut-icon-primary">
-                                <i class="fas fa-plus"></i>
-                            </div>
-                            <div>
-                                <div class="shortcut-label">Peminjaman</div>
-                                <p class="shortcut-title mb-0">Ajukan Peminjaman</p>
-                            </div>
-                        </a>
-
-                        <a href="{{ route('mahasiswa.keluhan.create') }}" class="shortcut-card">
-                            <div class="shortcut-icon shortcut-icon-warning">
-                                <i class="fas fa-exclamation-triangle"></i>
-                            </div>
-                            <div>
-                                <div class="shortcut-label">Layanan</div>
-                                <p class="shortcut-title mb-0">Buat Keluhan</p>
-                            </div>
-                        </a>
-
-                        <a href="{{ route('mahasiswa.peminjaman.index') }}" class="shortcut-card">
-                            <div class="shortcut-icon shortcut-icon-info">
-                                <i class="fas fa-list"></i>
-                            </div>
-                            <div>
-                                <div class="shortcut-label">Peminjaman</div>
-                                <p class="shortcut-title mb-0">Lihat Peminjaman</p>
-                            </div>
-                        </a>
-
-                        <a href="{{ route('mahasiswa.pengembalian.create') }}" class="shortcut-card">
-                            <div class="shortcut-icon shortcut-icon-success">
-                                <i class="fas fa-undo"></i>
-                            </div>
-                            <div>
-                                <div class="shortcut-label">Peminjaman</div>
-                                <p class="shortcut-title mb-0">Pengembalian Barang</p>
-                            </div>
-                        </a>
+                <div class="card-header d-flex justify-content-between align-items-center">
+                    <div>
+                        <h5 class="mb-0 fw-bold text-dark">
+                            <i class="fas fa-chart-pie me-2"></i>Rekap Statistik
+                        </h5>
+                        <small class="text-muted">Ringkasan total peminjaman, keluhan, dan denda</small>
+                    </div>
+                    <div class="text-end">
+                        <small class="text-muted d-block">Total peminjaman</small>
+                        <span class="fw-bold h5 mb-0">{{ $totalPeminjaman }}</span>
                     </div>
                 </div>
-            </div>
-        </div>
-
-        <div class="col-lg-6 mb-4">
-            <div class="card card-modern h-100">
-                <div class="card-header">
-                    <h5 class="mb-0 fw-bold text-success">
-                        <i class="fas fa-history me-2"></i>Riwayat & Status
-                    </h5>
-                </div>
                 <div class="card-body">
-                    <div class="shortcut-grid status">
-                        <a href="{{ route('mahasiswa.riwayat.index') }}" class="shortcut-card">
-                            <div class="shortcut-icon shortcut-icon-success">
-                                <i class="fas fa-history"></i>
-                            </div>
-                            <div>
-                                <div class="shortcut-label">Riwayat</div>
-                                <p class="shortcut-title mb-0">Riwayat Peminjaman</p>
-                            </div>
-                        </a>
-
-                        <a href="{{ route('mahasiswa.keluhan.index') }}" class="shortcut-card">
-                            <div class="shortcut-icon shortcut-icon-secondary">
-                                <i class="fas fa-comments"></i>
-                            </div>
-                            <div>
-                                <div class="shortcut-label">Layanan</div>
-                                <p class="shortcut-title mb-0">Keluhan Saya</p>
-                            </div>
-                        </a>
-
-                        <a href="#" class="shortcut-card">
-                            <div class="shortcut-icon shortcut-icon-dark">
-                                <i class="fas fa-user"></i>
-                            </div>
-                            <div>
-                                <div class="shortcut-label">Akun</div>
-                                <p class="shortcut-title mb-0">Profil Mahasiswa</p>
-                            </div>
-                        </a>
+                    <div class="stat-overview mb-3">
+                        <div class="item">
+                            <span class="label">Riwayat selesai</span>
+                            <span class="value text-success">{{ $riwayatSelesai }}</span>
+                        </div>
+                        <div class="item">
+                            <span class="label">Total peminjaman</span>
+                            <span class="value text-primary">{{ $totalPeminjaman }}</span>
+                        </div>
+                        <div class="item">
+                            <span class="label">Keluhan diajukan</span>
+                            <span class="value text-warning">{{ $keluhanDiajukan }}</span>
+                        </div>
+                        <div class="item">
+                            <span class="label">Total denda</span>
+                            <span class="value text-danger">Rp {{ number_format($totalDenda, 0, ',', '.') }}</span>
+                        </div>
+                    </div>
+                    <div>
+                        <small class="text-muted d-block mb-1">Progress penyelesaian</small>
+                        <div class="progress" style="height: 10px;">
+                            <div class="progress-bar bg-success" role="progressbar" style="width: {{ $persentaseSelesai }}%;" aria-valuenow="{{ $persentaseSelesai }}" aria-valuemin="0" aria-valuemax="100"></div>
+                        </div>
                     </div>
                 </div>
             </div>

@@ -11,15 +11,27 @@ class MahasiswaController extends Controller
     {
         $userId = auth()->id();
 
-        $riwayatPeminjaman = Peminjaman::with(['barang.kategori'])
+        $riwayatPeminjaman = Peminjaman::with(['barang.kategori', 'denda', 'keluhan'])
             ->where('id_pengguna', $userId)
             ->orderByDesc('waktu_awal')
             ->get();
 
         $statistik = [
             'aktif' => $riwayatPeminjaman->where('status', 'berlangsung')->count(),
-            'menunggu' => $riwayatPeminjaman->where('status', 'menunggu')->count(),
             'selesai' => $riwayatPeminjaman->where('status', 'selesai')->count(),
+        ];
+
+        $statistikSekunder = [
+            'total_peminjaman' => $riwayatPeminjaman->count(),
+            'total_denda'      => $riwayatPeminjaman->sum(fn ($p) => $p->denda?->sum('total_denda') ?? 0),
+            'total_keluhan'    => $riwayatPeminjaman->sum(fn ($p) => $p->keluhan?->count() ?? 0),
+            'rata_durasi_jam'  => round($riwayatPeminjaman->avg(function ($p) {
+                try {
+                    return Carbon::parse($p->waktu_awal)->diffInHours(Carbon::parse($p->waktu_akhir));
+                } catch (\Throwable) {
+                    return 0;
+                }
+            }) ?? 0, 1),
         ];
 
         $aktivitas = $riwayatPeminjaman->take(5)->map(function ($peminjaman) {
@@ -36,6 +48,7 @@ class MahasiswaController extends Controller
 
         return view('mahasiswa.dashboard', [
             'statistik' => $statistik,
+            'statistikSekunder' => $statistikSekunder,
             'aktivitas' => $aktivitas,
             'barangDipinjam' => $barangDipinjam,
         ]);
