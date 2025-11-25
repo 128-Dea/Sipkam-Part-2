@@ -276,17 +276,27 @@
 
                 <div class="mb-3">
                     <label class="form-label">Pilih Barang</label>
-                    <select name="id_barang" class="form-select" required>
-                        <option value="">-- Pilih Barang --</option>
-                        @foreach($barang as $item)
-                            <option value="{{ $item->id_barang }}" @selected(old('id_barang', $prefillBarangId ?? null) == $item->id_barang)>
-                                {{ $item->nama_barang }} (Stok: {{ $item->stok ?? '-' }} | Status: {{ ucfirst($item->status) }})
-                            </option>
-                        @endforeach
-                    </select>
-                    <div class="sipkam-help-text">
-                        Pastikan stok masih tersedia sebelum mengajukan peminjaman.
-                    </div>
+
+                    @if($prefillBarangId)
+                        @php $selected = $barang->firstWhere('id_barang', (int) $prefillBarangId); @endphp
+                        <div class="alert alert-info mb-2 py-2">
+                            <div class="fw-semibold">{{ $selected->nama_barang ?? 'Barang dipilih' }}</div>
+                        </div>
+                        <input type="hidden" name="id_barang" value="{{ $prefillBarangId }}">
+                    @else
+                        <select name="id_barang" class="form-select" required>
+                            <option value="">-- Pilih Barang --</option>
+                            @foreach($barang as $item)
+                                <option value="{{ $item->id_barang }}" @selected(old('id_barang') == $item->id_barang)>
+                                    {{ $item->nama_barang }} (Stok: {{ $item->stok ?? '-' }} | Status: {{ ucfirst($item->status) }})
+                                </option>
+                            @endforeach
+                        </select>
+                        <div class="sipkam-help-text">
+                            Pastikan stok masih tersedia sebelum mengajukan peminjaman.
+                        </div>
+                    @endif
+
                     @error('id_barang')<small class="text-danger">{{ $message }}</small>@enderror
                 </div>
             </div>

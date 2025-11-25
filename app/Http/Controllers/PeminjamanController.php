@@ -52,12 +52,19 @@ class PeminjamanController extends Controller
 
         $prefillBarangId = $request->query('barang_id');
 
-        $barang = Barang::with('kategori')
-            ->where(function ($q) {
-                $q->whereNull('stok')->orWhere('stok', '>', 0);
-            })
-            ->where('status', 'tersedia')
-            ->get();
+        // Ambil semua barang + relasi agar status_otomatis akurat, lalu filter yang benar-benar tersedia.
+        $barang = Barang::with(['kategori', 'peminjaman'])
+            ->get()
+            ->filter(fn (Barang $item) => $item->status_otomatis === 'tersedia')
+            ->values();
+
+        // Jika datang dari tombol "Pinjam Sekarang", pastikan barang prefill tetap ada dalam list.
+        if ($prefillBarangId && !$barang->firstWhere('id_barang', (int) $prefillBarangId)) {
+            $prefill = Barang::with(['kategori', 'peminjaman'])->find($prefillBarangId);
+            if ($prefill && $prefill->status_otomatis === 'tersedia') {
+                $barang->prepend($prefill);
+            }
+        }
 
         return view('peminjaman.create', [
             'barang' => $barang,
