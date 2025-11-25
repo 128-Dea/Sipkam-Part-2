@@ -7,7 +7,7 @@
 
 <div class="d-flex justify-content-between align-items-center mb-4 flex-wrap gap-2">
     <div>
-        <h1 class="h3 mb-1">Histori Transaksi 📁</h1>
+        <h1 class="h3 mb-1">Histori Transaksi</h1>
         <small class="text-muted">Arsip peminjaman yang sudah selesai</small>
     </div>
     <div class="d-flex gap-2">
@@ -24,9 +24,9 @@
                 <label class="form-label form-label-modern">Kondisi</label>
                 <select id="filter-kondisi" class="form-select form-control-modern">
                     <option value="">Semua</option>
-                    <option value="tersedia" {{ $filters['kondisi']==='tersedia' ? 'selected' : '' }}>🟢 Baik</option>
-                    <option value="dalam_service" {{ $filters['kondisi']==='dalam_service' ? 'selected' : '' }}>🟡 Service / Rusak</option>
-                    <option value="hilang" {{ $filters['kondisi']==='hilang' ? 'selected' : '' }}>🔴 Hilang</option>
+                    <option value="tersedia" {{ $filters['kondisi']==='tersedia' ? 'selected' : '' }}>Baik</option>
+                    <option value="dalam_service" {{ $filters['kondisi']==='dalam_service' ? 'selected' : '' }}>Service / Rusak</option>
+                    <option value="hilang" {{ $filters['kondisi']==='hilang' ? 'selected' : '' }}>Hilang</option>
                 </select>
             </div>
             <div class="col-md-6 col-lg-3">
@@ -163,9 +163,17 @@
         });
 
         function applyFilters() {
-            params.set('kondisi', inputs.kondisi.value || '');
-            params.set('search', inputs.search.value || '');
-            const query = params.toString().replace(/(&?[^=]*=)(?=&|$)/g, '');
+            params.set('kondisi', inputs.kondisi.value.trim());
+            params.set('search', inputs.search.value.trim());
+
+            // Hapus parameter kosong supaya query string bersih
+            Array.from(params.keys()).forEach((key) => {
+                if (!params.get(key)) {
+                    params.delete(key);
+                }
+            });
+
+            const query = params.toString();
             window.location = '{{ route('petugas.riwayat.index') }}' + (query ? '?' + query : '');
         }
 
@@ -188,6 +196,4 @@
     });
 </script>
 @endsection
-
-
 

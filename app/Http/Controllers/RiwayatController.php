@@ -46,12 +46,8 @@ class RiwayatController extends Controller
      */
     public function petugas(Request $request)
     {
-        $pengembalian = $this->queryHistory($request)->get();
-
-        $filters = [
-            'kondisi'  => $request->query('kondisi'),
-            'search'   => $request->query('search'),
-        ];
+        $filters = $this->extractFilters($request);
+        $pengembalian = $this->queryHistory($filters)->get();
 
         $totalDenda = $pengembalian->reduce(function ($carry, $item) {
             return $carry + ($item->peminjaman?->denda?->sum('total_denda') ?? 0);
@@ -62,7 +58,7 @@ class RiwayatController extends Controller
 
     public function exportCsv(Request $request): StreamedResponse
     {
-        $pengembalian = $this->queryHistory($request)->get();
+        $pengembalian = $this->queryHistory($this->extractFilters($request))->get();
         $filename = 'histori-transaksi.csv';
 
         return response()->streamDownload(function () use ($pengembalian) {
@@ -93,7 +89,7 @@ class RiwayatController extends Controller
 
     public function exportHtml(Request $request)
     {
-        $pengembalian = $this->queryHistory($request)->get();
+        $pengembalian = $this->queryHistory($this->extractFilters($request))->get();
         $totalDenda = $pengembalian->reduce(function ($carry, $item) {
             return $carry + ($item->peminjaman?->denda?->sum('total_denda') ?? 0);
         }, 0);
@@ -107,8 +103,11 @@ class RiwayatController extends Controller
         ]);
     }
 
-    protected function queryHistory(Request $request)
+    protected function queryHistory(array $filters)
     {
+        $kondisi = $filters['kondisi'] ?? null;
+        $search  = $filters['search'] ?? null;
+
         return Pengembalian::with([
                 'peminjaman.pengguna',
                 'peminjaman.barang',
@@ -117,20 +116,45 @@ class RiwayatController extends Controller
             ->whereHas('peminjaman', function ($q) {
                 $q->where('status', 'selesai');
             })
-            ->when($request->query('kondisi'), function ($q, $kondisi) {
-                $q->whereHas('peminjaman.barang', function ($qq) use ($kondisi) {
-                    $qq->where('status', $kondisi);
+            ->when($kondisi, function ($q, $kondisi) {
+                $q->whereHas('peminjaman', function ($qp) use ($kondisi) {
+                    $qp->whereHas('barang', function ($qb) use ($kondisi) {
+                        $qb->where('status', $kondisi);
+                    });
                 });
             })
-            ->when($request->query('search'), function ($q, $search) {
+            ->when($search, function ($q, $search) {
                 $q->where(function ($qq) use ($search) {
-                    $qq->whereHas('peminjaman.pengguna', function ($qqq) use ($search) {
-                        $qqq->where('nama', 'like', "%{$search}%");
-                    })->orWhereHas('peminjaman.barang', function ($qqq) use ($search) {
-                        $qqq->where('nama_barang', 'like', "%{$search}%");
+                    $qq->whereHas('peminjaman', function ($qp) use ($search) {
+                        $qp->whereHas('pengguna', function ($qu) use ($search) {
+                            $qu->where('nama', 'like', "%{$search}%");
+                        });
+                    })->orWhereHas('peminjaman', function ($qp) use ($search) {
+                        $qp->whereHas('barang', function ($qb) use ($search) {
+                            $qb->where('nama_barang', 'like', "%{$search}%");
+                        });
                     });
                 });
             })
             ->orderByDesc('waktu_pengembalian');
+    }
+
+    /**
+     * Ambil dan normalkan filter histori petugas agar selalu konsisten.
+     */
+    protected function extractFilters(Request $request): array
+    {
+        $kondisi = trim((string) $request->query('kondisi', ''));
+        $search  = trim((string) $request->query('search', ''));
+
+        $allowedKondisi = ['tersedia', 'dalam_service', 'hilang'];
+        if (!in_array($kondisi, $allowedKondisi, true)) {
+            $kondisi = null;
+        }
+
+        return [
+            'kondisi' => $kondisi,
+            'search'  => $search ?: null,
+        ];
     }
 }
