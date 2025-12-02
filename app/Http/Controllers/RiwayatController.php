@@ -2,18 +2,18 @@
 
 namespace App\Http\Controllers;
 
-use App\Models\Riwayat;
+use App\Models\riwayat;
 use App\Models\Pengembalian;
 use Illuminate\Http\Request;
 use Symfony\Component\HttpFoundation\StreamedResponse;
 
-class RiwayatController extends Controller
+class riwayatController extends Controller
 {
     public function index()
     {
         $userId = auth()->id();
 
-        $riwayat = Riwayat::with([
+        $riwayat = riwayat::with([
                 'pengembalian.peminjaman.pengguna',
                 'pengembalian.peminjaman.barang',
                 'pengembalian.peminjaman.denda',
@@ -27,7 +27,7 @@ class RiwayatController extends Controller
         return view('riwayat.index', compact('riwayat'));
     }
 
-    public function show(Riwayat $riwayat)
+    public function show(riwayat $riwayat)
     {
         $userId = auth()->id();
 
@@ -42,7 +42,7 @@ class RiwayatController extends Controller
     }
 
     /**
-     * Histori transaksi untuk petugas (peminjaman selesai).
+     * riwayat transaksi untuk petugas (peminjaman selesai).
      */
     public function petugas(Request $request)
     {
@@ -59,7 +59,7 @@ class RiwayatController extends Controller
     public function exportCsv(Request $request): StreamedResponse
     {
         $pengembalian = $this->queryHistory($this->extractFilters($request))->get();
-        $filename = 'histori-transaksi.csv';
+        $filename = 'riwayat-transaksi.csv';
 
         return response()->streamDownload(function () use ($pengembalian) {
             $handle = fopen('php://output', 'w');
@@ -98,7 +98,7 @@ class RiwayatController extends Controller
 
         return response()->streamDownload(function () use ($html) {
             echo $html;
-        }, 'histori-transaksi.html', [
+        }, 'riwayat-transaksi.html', [
             'Content-Type' => 'text/html',
         ]);
     }
@@ -140,7 +140,7 @@ class RiwayatController extends Controller
     }
 
     /**
-     * Ambil dan normalkan filter histori petugas agar selalu konsisten.
+     * Ambil dan normalkan filter riwayat petugas agar selalu konsisten.
      */
     protected function extractFilters(Request $request): array
     {

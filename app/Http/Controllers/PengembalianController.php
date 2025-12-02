@@ -5,7 +5,7 @@ namespace App\Http\Controllers;
 use App\Models\Denda;
 use App\Models\Peminjaman;
 use App\Models\Pengembalian;
-use App\Models\Riwayat;
+use App\Models\riwayat;
 use App\Models\Qr;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
@@ -333,7 +333,7 @@ class PengembalianController extends Controller
             }
 
             // Simpan ke tabel riwayat
-            Riwayat::create([
+            riwayat::create([
                 'id_pengembalian' => $pengembalian->id_pengembalian,
                 'denda'           => $totalDenda,
             ]);

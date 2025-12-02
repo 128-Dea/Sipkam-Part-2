@@ -20,27 +20,39 @@
 
     <style>
         :root {
-            --primary-color: #6366f1;
-            --primary-light: #a5b4fc;
-            --primary-dark: #4f46e5;
-            --secondary-color: #f8fafc;
-            --accent-color: #10b981;
+            /* === PALET HIJAU TEAL SIPKAM === */
+            --teal-900: #051F20;
+            --teal-800: #0B2B26;
+            --teal-700: #163832;
+            --teal-600: #235347;
+            --teal-300: #8EB69B;
+            --teal-100: #DAF1DE;
+
+            --primary-color: var(--teal-600);
+            --primary-light: var(--teal-300);
+            --primary-dark: var(--teal-900);
+            --secondary-color: var(--teal-100);
+            --accent-color: var(--teal-300);
             --warning-color: #f59e0b;
             --danger-color: #ef4444;
-            --text-primary: #1e293b;
-            --text-secondary: #64748b;
-            --bg-light: #f8fafc;
+            --text-primary: var(--teal-900);
+            --text-secondary: #355b4f;
+            --bg-light: var(--teal-100);
             --bg-white: #ffffff;
             --shadow-sm: 0 1px 2px 0 rgb(0 0 0 / 0.05);
             --shadow-md: 0 4px 6px -1px rgb(0 0 0 / 0.1);
-            --shadow-lg: 0 10px 15px -3px rgb(0 0 0 / 0.1);
+            --shadow-lg: 0 20px 35px rgba(0, 0, 0, 0.35);
             --border-radius: 12px;
-            --border-radius-lg: 16px;
+            --border-radius-lg: 24px;
         }
 
         body {
             font-family: 'Inter', sans-serif;
-            background: linear-gradient(135deg, #f0f8ff 0%, #e6f3ff 50%, #f0f8ff 100%);
+            /* Gradasi hijau terang → gelap */
+            background:
+                radial-gradient(circle at 10% 0%, rgba(218, 241, 222, 0.9) 0%, transparent 45%),
+                radial-gradient(circle at 90% 100%, rgba(11, 43, 38, 0.85) 0%, transparent 45%),
+                linear-gradient(180deg, #DAF1DE 0%, #8EB69B 45%, #163832 100%);
             min-height: 100vh;
             position: relative;
             overflow-x: hidden;
@@ -49,14 +61,11 @@
         body::before {
             content: '';
             position: absolute;
-            top: 0;
-            left: 0;
-            right: 0;
-            bottom: 0;
+            inset: 0;
             background-image:
-                radial-gradient(circle at 20% 80%, rgba(120, 119, 198, 0.1) 0%, transparent 50%),
-                radial-gradient(circle at 80% 20%, rgba(255, 255, 255, 0.1) 0%, transparent 50%),
-                radial-gradient(circle at 40% 40%, rgba(120, 119, 198, 0.05) 0%, transparent 50%);
+                radial-gradient(circle at 20% 80%, rgba(142, 182, 155, 0.28) 0%, transparent 55%),
+                radial-gradient(circle at 80% 20%, rgba(5, 31, 32, 0.3) 0%, transparent 45%),
+                radial-gradient(circle at 45% 35%, rgba(35, 83, 71, 0.25) 0%, transparent 55%);
             pointer-events: none;
         }
 
@@ -66,6 +75,7 @@
             padding: 2rem 1rem;
         }
 
+        /* ====== BRAND (LOGO SIPKAM) ====== */
         .brand-section {
             text-align: center;
             margin-bottom: 2rem;
@@ -74,42 +84,44 @@
         .brand-logo {
             width: 80px;
             height: 80px;
-            background: linear-gradient(135deg, var(--primary-color), var(--primary-dark));
+            background: radial-gradient(circle at 30% 0%, var(--teal-300) 0%, var(--teal-600) 40%, var(--teal-900) 100%);
             border-radius: 50%;
             display: flex;
             align-items: center;
             justify-content: center;
             margin: 0 auto 1.5rem;
-            box-shadow: var(--shadow-lg);
+            box-shadow: 0 18px 40px rgba(5, 31, 32, 0.55);
             transition: all 0.3s ease;
         }
 
         .brand-logo:hover {
-            transform: scale(1.05);
+            transform: translateY(-3px) scale(1.03);
         }
 
         .brand-logo i {
             font-size: 2.5rem;
-            color: white;
+            color: #fdfefc;
         }
 
         .brand-title {
             font-size: 2rem;
-            font-weight: 700;
-            color: var(--text-primary);
-            margin-bottom: 0.5rem;
-            background: linear-gradient(135deg, var(--primary-color), var(--primary-dark));
+            font-weight: 800;
+            letter-spacing: 0.08em;
+            text-transform: uppercase;
+            margin-bottom: 0.35rem;
+            background: linear-gradient(135deg, var(--teal-300), var(--teal-900));
             -webkit-background-clip: text;
             -webkit-text-fill-color: transparent;
             background-clip: text;
         }
 
         .brand-subtitle {
-            color: var(--text-secondary);
-            font-size: 1rem;
+            color: rgba(5, 31, 32, 0.72);
+            font-size: 0.98rem;
             font-weight: 500;
         }
 
+        /* ====== SPLASH SCREEN (LOADING) ====== */
         .splash-screen {
             position: fixed;
             inset: 0;
@@ -118,9 +130,10 @@
             align-items: center;
             justify-content: center;
             gap: 0.75rem;
-            background: radial-gradient(circle at 20% 20%, rgba(99, 102, 241, 0.15), transparent 35%),
-                        radial-gradient(circle at 80% 30%, rgba(79, 70, 229, 0.15), transparent 30%),
-                        linear-gradient(135deg, #f1f5ff 0%, #e4ebff 50%, #f1f5ff 100%);
+            background:
+                radial-gradient(circle at 20% 20%, rgba(142, 182, 155, 0.25), transparent 40%),
+                radial-gradient(circle at 80% 30%, rgba(5, 31, 32, 0.28), transparent 40%),
+                linear-gradient(135deg, #DAF1DE 0%, #8EB69B 45%, #163832 100%);
             z-index: 2000;
             transition: opacity 0.6s ease, visibility 0.6s ease;
         }
@@ -134,103 +147,171 @@
             width: 96px;
             height: 96px;
             border-radius: 50%;
-            background: linear-gradient(135deg, var(--primary-color), var(--primary-dark));
+            background: radial-gradient(circle at 30% 0%, var(--teal-300) 0%, var(--teal-600) 40%, var(--teal-900) 100%);
             display: grid;
             place-items: center;
-            box-shadow: var(--shadow-lg);
+            box-shadow: 0 22px 45px rgba(5, 31, 32, 0.6);
             animation: pulse 1.8s ease-in-out infinite;
         }
 
         .splash-logo i {
             font-size: 2.75rem;
-            color: white;
+            color: #fdfefc;
         }
 
         .splash-title {
             font-size: 2rem;
             font-weight: 800;
-            letter-spacing: 0.02em;
-            color: var(--text-primary);
+            letter-spacing: 0.08em;
+            color: var(--teal-900);
         }
 
         .splash-subtitle {
-            font-size: 1rem;
-            color: var(--text-secondary);
+            font-size: 0.95rem;
+            color: rgba(5, 31, 32, 0.75);
             font-weight: 600;
         }
 
         @keyframes pulse {
-            0%, 100% { transform: scale(1); box-shadow: 0 0 0 0 rgba(99, 102, 241, 0.25); }
-            50% { transform: scale(1.04); box-shadow: 0 0 0 12px rgba(99, 102, 241, 0.08); }
+            0%, 100% { transform: scale(1); box-shadow: 0 0 0 0 rgba(142, 182, 155, 0.35); }
+            50% { transform: scale(1.05); box-shadow: 0 0 0 16px rgba(142, 182, 155, 0.10); }
         }
 
+        /* ====== WRAPPER + FORM CARD ====== */
+
+        /* frame besar (yang tadinya putih tinggi) */
         .auth-card {
-            background: rgba(255, 255, 255, 0.95);
-            backdrop-filter: blur(20px);
-            border: 1px solid rgba(255, 255, 255, 0.2);
-            border-radius: var(--border-radius-lg);
+            background: linear-gradient(180deg, rgba(218, 241, 222, 0.98) 0%, rgba(142, 182, 155, 0.92) 45%, rgba(22, 56, 50, 0.98) 100%);
+            border-radius: 32px;
+            padding: 3px; /* buat efek border gradasi tipis */
             box-shadow:
-                0 20px 25px -5px rgba(0, 0, 0, 0.1),
-                0 10px 10px -5px rgba(0, 0, 0, 0.04),
-                0 0 0 1px rgba(255, 255, 255, 0.05);
-            overflow: hidden;
+                0 28px 45px rgba(5, 31, 32, 0.65),
+                0 0 0 1px rgba(255, 255, 255, 0.08);
             position: relative;
+            overflow: visible;
         }
 
+        /* hilangkan bar warna di atas card yang lama */
         .auth-card::before {
-            content: '';
-            position: absolute;
-            top: 0;
-            left: 0;
-            right: 0;
-            height: 4px;
-            background: linear-gradient(90deg, var(--primary-color), var(--accent-color), var(--warning-color));
+            display: none;
         }
 
+        /* inner card gelap, tempat form login */
         .auth-card-body {
-            padding: 2.5rem;
+            background: radial-gradient(circle at 0% 0%, #163832 0%, #051F20 55%, #051F20 100%);
+            border-radius: 28px;
+            padding: 2.25rem 2.5rem;
+            color: #EAF7EF;
+            box-shadow:
+                0 20px 35px rgba(0, 0, 0, 0.45),
+                0 0 0 1px rgba(8, 43, 38, 0.6);
         }
 
-        .form-control-modern {
-            border: 2px solid #e2e8f0;
-            border-radius: var(--border-radius);
-            padding: 0.75rem 1rem;
-            font-size: 0.95rem;
-            transition: all 0.3s ease;
-            background: var(--bg-white);
+        /* ====== FORM DI DALAM CARD GELAP ====== */
+
+        .auth-card-body h1,
+        .auth-card-body h2,
+        .auth-card-body h3,
+        .auth-card-body h4,
+        .auth-card-body h5 {
+            color: #EAF7EF;
         }
 
-        .form-control-modern:focus {
-            border-color: var(--primary-color);
-            box-shadow: 0 0 0 3px rgba(99, 102, 241, 0.1);
-            outline: none;
+        .auth-card-body .text-muted {
+            color: rgba(218, 241, 222, 0.78) !important;
         }
 
         .form-label-modern {
             font-weight: 600;
-            color: var(--text-primary);
-            margin-bottom: 0.5rem;
+            color: #EAF7EF;
+            margin-bottom: 0.4rem;
             font-size: 0.9rem;
         }
 
+        .form-control-modern {
+            border: 1px solid #163832;
+            border-radius: 999px;
+            padding: 0.7rem 1rem;
+            font-size: 0.95rem;
+            transition: all 0.25s ease;
+            background: #0B2B26;
+            color: #EAF7EF;
+        }
+
+        .form-control-modern::placeholder {
+            color: rgba(234, 247, 239, 0.6);
+        }
+
+        .form-control-modern:focus {
+            border-color: var(--teal-300);
+            box-shadow: 0 0 0 2px rgba(142, 182, 155, 0.3);
+            outline: none;
+            background: #0B2B26;
+            color: #EAF7EF;
+        }
+
+        .input-group .btn-outline-secondary {
+            border-radius: 999px;
+            border-color: #163832;
+            background-color: #0B2B26;
+            color: #EAF7EF;
+        }
+
+        .input-group .btn-outline-secondary:hover {
+            background-color: #163832;
+            border-color: #163832;
+            color: #EAF7EF;
+        }
+
+        .form-check-input {
+            border-radius: 6px;
+            border-color: #163832;
+            background-color: transparent;
+        }
+
+        .form-check-input:checked {
+            background-color: var(--teal-300);
+            border-color: var(--teal-300);
+        }
+
+        .form-check-label {
+            color: rgba(218, 241, 222, 0.85);
+        }
+
+        .auth-card-body a.text-primary,
+        .auth-card-body a.text-primary:visited {
+            color: var(--teal-300) !important;
+        }
+
+        .auth-card-body a.text-primary:hover {
+            color: #DAF1DE !important;
+        }
+
         .btn-modern {
-            border-radius: var(--border-radius);
+            border-radius: 999px;
             font-weight: 600;
             padding: 0.75rem 1.5rem;
-            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
             border: none;
             position: relative;
             overflow: hidden;
         }
 
         .btn-modern-primary {
-            background: linear-gradient(135deg, var(--primary-color), var(--primary-dark));
-            color: white;
+            background: linear-gradient(135deg, var(--teal-300), var(--teal-900));
+            color: #fdfefc;
+            box-shadow: 0 10px 25px rgba(5, 31, 32, 0.55);
         }
 
         .btn-modern-primary:hover {
             transform: translateY(-2px);
-            box-shadow: 0 8px 25px rgba(99, 102, 241, 0.3);
+            box-shadow: 0 14px 35px rgba(5, 31, 32, 0.7);
+            filter: brightness(1.03);
+        }
+
+        .btn-outline-info,
+        .btn-outline-secondary {
+            border-radius: 999px;
         }
 
         .loading-spinner {
@@ -248,60 +329,59 @@
             to { transform: rotate(360deg); }
         }
 
+        /* ====== FLOATING SHAPES ====== */
         .floating-shapes {
             position: absolute;
-            top: 0;
-            left: 0;
-            right: 0;
-            bottom: 0;
+            inset: 0;
             overflow: hidden;
             z-index: 0;
         }
 
         .shape {
             position: absolute;
-            opacity: 0.1;
+            opacity: 0.12;
             animation: float 6s ease-in-out infinite;
         }
 
         .shape:nth-child(1) {
-            top: 10%;
+            top: 12%;
             left: 10%;
             width: 60px;
             height: 60px;
-            background: var(--primary-color);
+            background: var(--teal-300);
             border-radius: 50%;
             animation-delay: 0s;
         }
 
         .shape:nth-child(2) {
-            top: 20%;
-            right: 10%;
-            width: 40px;
-            height: 40px;
-            background: var(--accent-color);
-            border-radius: 20px;
+            top: 25%;
+            right: 12%;
+            width: 44px;
+            height: 44px;
+            background: var(--teal-600);
+            border-radius: 22px;
             animation-delay: 2s;
         }
 
         .shape:nth-child(3) {
-            bottom: 20%;
-            left: 20%;
-            width: 80px;
-            height: 80px;
-            background: var(--warning-color);
-            border-radius: 40px;
+            bottom: 18%;
+            left: 22%;
+            width: 84px;
+            height: 84px;
+            background: var(--teal-900);
+            border-radius: 42px;
             animation-delay: 4s;
         }
 
         @keyframes float {
             0%, 100% { transform: translateY(0px) rotate(0deg); }
-            50% { transform: translateY(-20px) rotate(180deg); }
+            50% { transform: translateY(-18px) rotate(180deg); }
         }
 
+        /* ====== RESPONSIVE ====== */
         @media (max-width: 768px) {
             .guest-container {
-                padding: 1rem;
+                padding: 1.5rem 1rem;
             }
 
             .auth-card-body {
@@ -309,26 +389,30 @@
             }
 
             .brand-title {
-                font-size: 1.5rem;
+                font-size: 1.6rem;
             }
 
             .brand-logo {
-                width: 60px;
-                height: 60px;
+                width: 64px;
+                height: 64px;
             }
 
             .brand-logo i {
-                font-size: 2rem;
+                font-size: 2.1rem;
             }
         }
 
         @media (max-width: 576px) {
+            .auth-card {
+                border-radius: 24px;
+            }
+
             .auth-card-body {
-                padding: 1.5rem 1rem;
+                padding: 1.75rem 1.25rem;
             }
 
             .brand-title {
-                font-size: 1.25rem;
+                font-size: 1.4rem;
             }
         }
     </style>

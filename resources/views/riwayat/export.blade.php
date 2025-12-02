@@ -2,7 +2,7 @@
 <html lang="id">
 <head>
     <meta charset="UTF-8">
-    <title>Histori Transaksi</title>
+    <title>riwayat Transaksi</title>
     <style>
         body { font-family: Arial, sans-serif; font-size: 12px; }
         h2 { margin-bottom: 4px; }
@@ -12,7 +12,7 @@
     </style>
 </head>
 <body>
-    <h2>Histori Transaksi SIPKAM</h2>
+    <h2>riwayat Transaksi SIPKAM</h2>
     <p>Total Denda: Rp {{ number_format($totalDenda, 0, ',', '.') }}</p>
     <table>
         <thead>

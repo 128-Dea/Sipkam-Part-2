@@ -38,6 +38,11 @@ class Barang extends Model
         'status_otomatis',
     ];
 
+    public function getRouteKeyName(): string
+    {
+        return 'id_barang';
+    }
+
     // ====== RELASI ======
 
     public function kategori(): BelongsTo

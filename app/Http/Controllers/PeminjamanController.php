@@ -6,7 +6,7 @@ use App\Models\Barang;
 use App\Models\Pengguna;
 use App\Models\Peminjaman;
 use App\Models\Pengembalian;
-use App\Models\Riwayat;
+use App\Models\riwayat;
 use App\Models\Qr;
 use Illuminate\Http\Request;
 use Illuminate\Support\Carbon;
@@ -38,12 +38,19 @@ class PeminjamanController extends Controller
     public function booking()
     {
         $user = auth()->user();
-        abort_unless($user && $user->role === 'petugas', 403);
+        abort_unless($user && in_array($user->role, ['petugas', 'mahasiswa'], true), 403);
 
-        $booking = Peminjaman::with(['barang', 'pengguna', 'qr'])
+        $bookingQuery = Peminjaman::with(['barang', 'pengguna', 'qr'])
             ->whereIn('status', ['booking', 'ditolak'])
-            ->orderByDesc('waktu_awal')
-            ->get();
+            ->orderByDesc('waktu_awal');
+
+        if ($user->role === 'mahasiswa') {
+            $penggunaId = $this->resolvePenggunaId($user);
+            abort_unless($penggunaId, 403);
+            $bookingQuery->where('id_pengguna', $penggunaId);
+        }
+
+        $booking = $bookingQuery->get();
 
         return view('peminjaman.booking', ['booking' => $booking]);
     }
@@ -183,7 +190,7 @@ public function show(Peminjaman $peminjaman)
             // Kembalikan stok/ status barang jika kita sudah mengurangi saat booking dibuat.
             $this->kembalikanBarangSetelahBatal($peminjaman->barang);
 
-            // Catat ke tabel pengembalian + riwayat agar tampil di histori.
+            // Catat ke tabel pengembalian + riwayat agar tampil di riwayat.
             if (!$peminjaman->pengembalian) {
                 $pengembalian = Pengembalian::create([
                     'id_peminjaman'      => $peminjaman->id_peminjaman,
@@ -194,7 +201,7 @@ public function show(Peminjaman $peminjaman)
                     ),
                 ]);
 
-                Riwayat::create([
+                riwayat::create([
                     'id_pengembalian' => $pengembalian->id_pengembalian,
                     'denda'           => 0,
                 ]);

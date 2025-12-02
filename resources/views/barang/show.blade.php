@@ -42,10 +42,6 @@
                             <td>{{ $barang->kategori->nama_kategori ?? 'N/A' }}</td>
                         </tr>
                         <tr>
-                            <th>Deskripsi</th>
-                            <td>{{ $barang->deskripsi ?? '-' }}</td>
-                        </tr>
-                        <tr>
                             <th>Harga</th>
                             <td>
                                 @if($barang->harga)
@@ -122,7 +118,7 @@
                                     @method('PATCH')
                                     <input type="hidden" name="jumlah" value="1">
                                     <button class="btn btn-outline-secondary w-100" type="submit">
-                                        − 1 Stok
+                                        - 1 Stok
                                     </button>
                                 </form>
                                 <form action="{{ route('petugas.barang.stok.tambah', $barang->id_barang) }}"

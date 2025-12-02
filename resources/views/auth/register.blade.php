@@ -1,17 +1,58 @@
 <x-guest-layout>
 
-    {{-- PERBESAR INPUT FIELD --}}
+    {{-- STYLING KHUSUS HALAMAN REGISTER (PALET HIJAU SAMA DENGAN LOGIN) --}}
     <style>
-        .form-control-modern {
-            min-height: 54px;          /* tinggi kotak input */
-            padding: 0.75rem 1rem;     /* jarak teks ke pinggir */
-            font-size: 0.95rem;        /* sedikit lebih besar */
+        /* pakai variabel dari guest-layout: --teal-300, --teal-600, dll */
+
+        /* Perbesar input field & tetap pakai styling hijau gelap dari layout */
+        .auth-card-body .form-control-modern {
+            min-height: 54px;
+            padding: 0.75rem 1rem;
+            font-size: 0.95rem;
         }
 
-        /* opsional: supaya tombol radio Mahasiswa/Petugas terasa lebih besar juga */
-        .btn-outline-primary {
+        /* Judul & teks yang pakai class .text-primary -> jadi teal lembut */
+        .auth-card-body .text-primary {
+            color: var(--teal-300) !important;
+        }
+
+        /* Tombol pilihan Mahasiswa / Petugas (btn-outline-primary) pakai warna hijau */
+        .auth-card-body .btn-outline-primary {
+            border-radius: 999px;
+            border-color: var(--teal-300);
+            color: var(--teal-300);
+            background-color: transparent;
             padding-top: 0.7rem;
             padding-bottom: 0.7rem;
+            font-weight: 600;
+        }
+
+        .auth-card-body .btn-outline-primary:hover,
+        .auth-card-body .btn-outline-primary:focus {
+            background-color: rgba(142, 182, 155, 0.12);
+            border-color: var(--teal-300);
+            color: #DAF1DE;
+            box-shadow: 0 0 0 2px rgba(142, 182, 155, 0.35);
+        }
+
+        /* Saat radio checked => tombol jadi blok teal solid seperti di login */
+        .auth-card-body .btn-check:checked + .btn-outline-primary,
+        .auth-card-body .btn-check:active + .btn-outline-primary,
+        .auth-card-body .btn-outline-primary.active {
+            background: linear-gradient(135deg, var(--teal-300), var(--teal-600));
+            border-color: var(--teal-300);
+            color: #051F20;
+            box-shadow: 0 10px 20px rgba(5, 31, 32, 0.55);
+        }
+
+        /* Caption kecil tetap mudah dibaca di background gelap */
+        .auth-card-body small.text-muted {
+            color: rgba(218, 241, 222, 0.78) !important;
+        }
+
+        /* Icon tombol show password tetap menyatu dengan card gelap */
+        .auth-card-body .btn-outline-secondary {
+            border-radius: 999px;
         }
     </style>
 
@@ -26,7 +67,7 @@
     {{-- Batasi lebar form & letakkan di tengah --}}
     <div class="mx-auto" style="max-width: 480px;">
 
-        {{-- FORM: TANPA card / bg-white lagi --}}
+        {{-- FORM: logika tetap sama --}}
         <form method="POST" action="{{ route('register') }}" id="registerForm" class="p-4 p-md-5">
             @csrf
 
@@ -188,7 +229,7 @@
         </form>
     </div>
 
-    {{-- SCRIPT: tetap sama --}}
+    {{-- SCRIPT: PERSIS SAMA, TIDAK DIUBAH --}}
     <script>
         document.addEventListener('DOMContentLoaded', function() {
             const roleRadios = document.querySelectorAll('input[name="role"]');

@@ -31,6 +31,6 @@ class Pengembalian extends Model
 
     public function riwayat(): HasOne
     {
-        return $this->hasOne(Riwayat::class, 'id_pengembalian', 'id_pengembalian');
+        return $this->hasOne(riwayat::class, 'id_pengembalian', 'id_pengembalian');
     }
 }

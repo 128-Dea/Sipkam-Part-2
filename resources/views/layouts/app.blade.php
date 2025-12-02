@@ -20,17 +20,19 @@
 
     <style>
         :root {
-            --primary-color: #6366f1;
-            --primary-light: #a5b4fc;
-            --primary-dark: #4f46e5;
+            /* PRIMARY SEKARANG PALET HIJAU–TEAL (sesuai referensi) */
+            --primary-color: #2C6975;
+            --primary-light: #6BB2A0;
+            --primary-dark: #23524F;
+
             --secondary-color: #f8fafc;
-            --accent-color: #10b981;
+            --accent-color: #6BB2A0;   /* dipakai untuk tombol sukses, dsb */
             --warning-color: #f59e0b;
             --danger-color: #ef4444;
             --text-primary: #1e293b;
             --text-secondary: #64748b;
-            --bg-light: #f8fafc;
-            --bg-white: #ffffff;
+            --bg-light: #6BB2A0;
+            --bg-white: #23524F;
             --shadow-sm: 0 1px 2px 0 rgb(0 0 0 / 0.05);
             --shadow-md: 0 4px 6px -1px rgb(0 0 0 / 0.1);
             --shadow-lg: 0 10px 15px -3px rgb(0 0 0 / 0.1);
@@ -43,6 +45,16 @@
             background-color: var(--bg-light);
             color: var(--text-primary);
             line-height: 1.6;
+        }
+
+        body.petugas-theme.petugas-barang {
+            background-image: none;
+            background-color: #ffffff;
+        }
+
+        body.sipkam-dark.petugas-theme.petugas-barang {
+            background-image: none;
+            background-color: #ffffff;
         }
 
         /* Modern Sidebar */
@@ -60,7 +72,8 @@
             backdrop-filter: blur(10px);
         }
 
-        .sidebar-modern:hover {
+        /* ➜ SEKARANG MELEBAR KALAU ADA CLASS .expanded, BUKAN HOVER */
+        .sidebar-modern.expanded {
             width: 280px;
         }
 
@@ -85,7 +98,8 @@
             display: none;
         }
 
-        .sidebar-modern:hover .sidebar-logo .logo-text {
+        /* ➜ TULISAN LOGO MUNCUL SAAT .expanded */
+        .sidebar-modern.expanded .sidebar-logo .logo-text {
             display: block;
         }
 
@@ -103,10 +117,6 @@
 
         .sidebar-modern.collapsed .sidebar-logo .logo-text {
             display: none;
-        }
-
-        .sidebar-modern.collapsed:hover .sidebar-logo .logo-text {
-            display: block;
         }
 
         .sidebar-nav {
@@ -172,7 +182,8 @@
             white-space: nowrap;
         }
 
-        .sidebar-modern:hover .sidebar-nav .nav-link span {
+        /* ➜ LABEL MENU MUNCUL SAAT SIDEBAR .expanded */
+        .sidebar-modern.expanded .sidebar-nav .nav-link span {
             display: inline;
         }
 
@@ -183,7 +194,8 @@
             min-height: 100vh;
         }
 
-        .sidebar-modern:hover ~ .main-content-modern {
+        /* ➜ KONTEN GESER KANAN SAAT SIDEBAR .expanded */
+        .main-content-modern.expanded {
             margin-left: 280px;
         }
 
@@ -707,9 +719,63 @@
             background: var(--sipkam-accent-green);
             color: #020617;
         }
+        /* Ubah warna tombol nav & teks SIPKAM jadi hijau teal */
+.top-nav .btn-link,
+.top-nav .btn-link i {
+    color: var(--accent-color) !important;   /* hijau teal dari palet */
+}
+
+.top-nav .navbar-brand,
+.top-nav .navbar-brand.text-primary,
+.top-nav .text-primary {
+    color: var(--accent-color) !important;
+}
+
+/* Kontak footer mahasiswa: sembunyikan teks saat sidebar tertutup */
+#sidebar-mahasiswa {
+    transition: width 0.3s ease;
+}
+
+#sidebar-mahasiswa .sidebar-footer {
+    padding: 0.5rem 0.75rem;
+}
+
+#sidebar-mahasiswa .sidebar-footer .kontak-title,
+#sidebar-mahasiswa .sidebar-footer .kontak-text {
+    display: none;
+    transition: all 0.3s ease;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+/* Tampilkan hanya ketika sidebar dibuka (expanded/show) */
+#sidebar-mahasiswa.expanded .sidebar-footer,
+#sidebar-mahasiswa.show .sidebar-footer {
+    padding: 1rem 1.25rem;
+}
+
+#sidebar-mahasiswa.expanded .sidebar-footer .kontak-title,
+#sidebar-mahasiswa.expanded .sidebar-footer .kontak-text,
+#sidebar-mahasiswa.show .sidebar-footer .kontak-title,
+#sidebar-mahasiswa.show .sidebar-footer .kontak-text {
+    display: inline;
+}
     </style>
+@php
+    $isPetugasUser = auth()->check() && auth()->user()->role === 'petugas';
+    $bodyRole = auth()->user()?->role ?? '';
+    $bodyClasses = [];
+    if ($isPetugasUser) {
+        $bodyClasses[] = 'petugas-theme';
+    }
+    if (request()->routeIs('barang.*')) {
+        $bodyClasses[] = 'petugas-barang';
+    }
+    $bodyRouteName = request()->route()?->getName() ?? '';
+@endphp
 </head>
-<body>
+<body class="{{ implode(' ', $bodyClasses) }}" data-role="{{ $bodyRole }}" data-route="{{ $bodyRouteName }}">
     @if(auth()->check() && auth()->user()->role === 'petugas')
         <!-- Modern Sidebar untuk Petugas -->
         <nav class="sidebar-modern collapsed" id="sidebar">
@@ -782,7 +848,7 @@
                     <li class="nav-item">
                         <a class="nav-link {{ request()->routeIs('petugas.riwayat.*') ? 'active' : '' }}" href="{{ route('petugas.riwayat.index') }}">
                             <i class="fas fa-folder-open"></i>
-                            <span>Histori</span>
+                            <span>riwayat</span>
                         </a>
                     </li>
                     <li class="nav-item">
@@ -826,14 +892,15 @@
             <nav class="top-nav">
                 <div class="d-flex justify-content-between align-items-center w-100">
                     <div class="d-flex align-items-center">
-                        <button class="btn btn-link text-decoration-none me-3 d-md-none" id="sidebar-toggle">
+                        {{-- ➜ TOMBOL GARIS 3 UNTUK PETUGAS (DESKTOP + MOBILE) --}}
+                        <button class="btn btn-link text-decoration-none me-3" id="sidebar-toggle" title="Menu">
                             <i class="fas fa-bars fa-lg"></i>
                         </button>
                         <button class="btn btn-link text-decoration-none me-3" onclick="history.back()" title="Kembali">
                             <i class="fas fa-arrow-left fa-lg"></i>
                         </button>
                         <h4 class="mb-0 fw-bold text-primary">
-                            @yield('page-title', 'Dashboard')
+                            @yield('page-title', 'SIPKAM')
                         </h4>
                     </div>
 
@@ -924,6 +991,12 @@
                         </a>
                     </li>
                     <li class="nav-item">
+                        <a class="nav-link {{ request()->routeIs('mahasiswa.booking.*') ? 'active' : '' }}" href="{{ route('mahasiswa.booking.index') }}">
+                            <i class="fas fa-calendar-check"></i>
+                            <span>Booking</span>
+                        </a>
+                    </li>
+                    <li class="nav-item">
                         <a class="nav-link {{ request()->routeIs('mahasiswa.perpanjangan.*') ? 'active' : '' }}" href="{{ route('mahasiswa.perpanjangan.index') }}">
                             <i class="fas fa-clock"></i>
                             <span>Perpanjangan</span>
@@ -961,57 +1034,33 @@
                         </a>
                     </li>
                     <li class="nav-item">
-                    <a class="nav-link {{ request()->routeIs('mahasiswa.riwayat.*') ? 'active' : '' }}" href="{{ route('mahasiswa.riwayat.index') }}">
-                        <i class="fas fa-history"></i>
-                        <span>Riwayat</span>
-                    </a>
-                </li>
-                <li class="nav-item">
-                    <a class="nav-link {{ request()->routeIs('profile.show') ? 'active' : '' }}" href="{{ route('profile.show') }}">
-                        <i class="fas fa-user"></i>
-                        <span>Profile</span>
-                    </a>
-                </li>
-            </ul>
-        </div>
-        <div class="sidebar-footer">
-            <div class="fw-semibold small mb-1 kontak-title">Kontak SIPKAM</div>
-            <div class="contact-mini d-flex align-items-start gap-2 mb-1">
-                <i class="fas fa-headset mt-1"></i>
-                <span class="kontak-text">Call Center: 0812-3456-7890</span>
+                        <a class="nav-link {{ request()->routeIs('mahasiswa.riwayat.*') ? 'active' : '' }}" href="{{ route('mahasiswa.riwayat.index') }}">
+                            <i class="fas fa-history"></i>
+                            <span>Riwayat</span>
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link {{ request()->routeIs('profile.show') ? 'active' : '' }}" href="{{ route('profile.show') }}">
+                            <i class="fas fa-user"></i>
+                            <span>Profile</span>
+                        </a>
+                    </li>
+                </ul>
             </div>
-            <div class="contact-mini d-flex align-items-start gap-2">
-                <i class="fas fa-envelope mt-1"></i>
-                <span class="kontak-text">Email: SIPKAM@admin.ac.id</span>
+            <div class="sidebar-footer">
+                <div class="fw-semibold small mb-1 kontak-title">Kontak SIPKAM</div>
+                <div class="contact-mini d-flex align-items-start gap-2 mb-1">
+                    <i class="fas fa-headset mt-1"></i>
+                    <span class="kontak-text">Call Center: 0812-3456-7890</span>
+                </div>
+                <div class="contact-mini d-flex align-items-start gap-2">
+                    <i class="fas fa-envelope mt-1"></i>
+                    <span class="kontak-text">Email: SIPKAM@admin.ac.id</span>
+                </div>
             </div>
-        </div>
 
-        <style>
-            /* Hide kontak text by default, show only icons */
-            #sidebar-mahasiswa .sidebar-footer .kontak-text,
-            #sidebar-mahasiswa .sidebar-footer .kontak-title {
-                display: none;
-                transition: all 0.3s ease;
-                white-space: nowrap;
-            }
-
-            /* Show kontak text on sidebar hover */
-            #sidebar-mahasiswa:hover .sidebar-footer .kontak-text,
-            #sidebar-mahasiswa:hover .sidebar-footer .kontak-title {
-                display: inline;
-            }
-
-            /* Adjust sidebar-footer padding when collapsed */
-            #sidebar-mahasiswa {
-                transition: width 0.3s ease;
-            }
-
-            /* Make sure sidebar-footer content fits nicely on hover */
-            #sidebar-mahasiswa:hover .sidebar-footer {
-                padding-left: 1rem;
-            }
-        </style>
-    </nav>
+        
+        </nav>
 
         <!-- Main Content Wrapper untuk Mahasiswa -->
         <div class="main-content-modern" id="main-content-mahasiswa">
@@ -1019,7 +1068,8 @@
             <nav class="top-nav">
                 <div class="d-flex justify-content-between align-items-center w-100">
                     <div class="d-flex align-items-center">
-                        <button class="btn btn-link text-decoration-none me-3 d-md-none" id="sidebar-toggle-mahasiswa">
+                        {{-- ➜ TOMBOL GARIS 3 UNTUK MAHASISWA (DESKTOP + MOBILE) --}}
+                        <button class="btn btn-link text-decoration-none me-3" id="sidebar-toggle-mahasiswa" title="Menu">
                             <i class="fas fa-bars fa-lg"></i>
                         </button>
                         <button class="btn btn-link text-decoration-none me-3" onclick="history.back()">
@@ -1091,27 +1141,45 @@
     <script>
         // Modern UI Interactions
         document.addEventListener('DOMContentLoaded', function() {
-            // Sidebar toggle for mobile (Petugas)
+            // Sidebar toggle untuk Petugas
             const sidebarToggle = document.getElementById('sidebar-toggle');
             const sidebar = document.getElementById('sidebar');
             const mainContent = document.getElementById('main-content');
 
-            if (sidebarToggle && sidebar) {
-                sidebarToggle.addEventListener('click', function() {
-                    sidebar.classList.toggle('show');
+            if (sidebarToggle && sidebar && mainContent) {
+                sidebarToggle.addEventListener('click', function(e) {
+                    e.preventDefault();
+                    e.stopPropagation();
+
+                    // desktop: expand / collapse
+                    sidebar.classList.toggle('expanded');
+                    mainContent.classList.toggle('expanded');
+
+                    // mobile: slide in/out
+                    if (window.innerWidth <= 768) {
+                        sidebar.classList.toggle('show');
+                    }
                 });
             }
 
-            // Sidebar toggle for mobile (Mahasiswa)
+            // Sidebar toggle untuk Mahasiswa
             const sidebarToggleMahasiswa = document.getElementById('sidebar-toggle-mahasiswa');
             const sidebarMahasiswa = document.getElementById('sidebar-mahasiswa');
             const mainContentMahasiswa = document.getElementById('main-content-mahasiswa');
 
-            if (sidebarToggleMahasiswa && sidebarMahasiswa) {
+            if (sidebarToggleMahasiswa && sidebarMahasiswa && mainContentMahasiswa) {
                 sidebarToggleMahasiswa.addEventListener('click', function(e) {
                     e.preventDefault();
                     e.stopPropagation();
-                    sidebarMahasiswa.classList.toggle('show');
+
+                    // desktop: expand / collapse
+                    sidebarMahasiswa.classList.toggle('expanded');
+                    mainContentMahasiswa.classList.toggle('expanded');
+
+                    // mobile: slide in/out
+                    if (window.innerWidth <= 768) {
+                        sidebarMahasiswa.classList.toggle('show');
+                    }
                 });
             }
 
@@ -1120,6 +1188,8 @@
                 mainContent.addEventListener('click', function(e) {
                     if (window.innerWidth <= 768 && sidebar.classList.contains('show')) {
                         sidebar.classList.remove('show');
+                        sidebar.classList.remove('expanded');
+                        mainContent.classList.remove('expanded');
                     }
                 });
             }
@@ -1128,6 +1198,8 @@
                 mainContentMahasiswa.addEventListener('click', function(e) {
                     if (window.innerWidth <= 768 && sidebarMahasiswa.classList.contains('show')) {
                         sidebarMahasiswa.classList.remove('show');
+                        sidebarMahasiswa.classList.remove('expanded');
+                        mainContentMahasiswa.classList.remove('expanded');
                     }
                 });
             }
@@ -1144,9 +1216,9 @@
             // Smooth scrolling for anchor links
             document.querySelectorAll('a[href^="#"]').forEach(anchor => {
                 anchor.addEventListener('click', function (e) {
-                    e.preventDefault();
                     const target = document.querySelector(this.getAttribute('href'));
                     if (target) {
+                        e.preventDefault();
                         target.scrollIntoView({
                             behavior: 'smooth',
                             block: 'start'
@@ -1277,8 +1349,12 @@
                 window.matchMedia('(prefers-color-scheme: dark)').matches;
 
             const initialTheme = savedTheme || (prefersDark ? 'sipkam-dark' : 'sipkam-light');
+            const isPetugas = document.body.dataset.role === 'petugas';
 
             document.body.classList.remove('sipkam-light', 'sipkam-dark');
+            if (isPetugas) {
+                document.body.classList.add('petugas-theme');
+            }
             document.body.classList.add(initialTheme);
         });
     </script>

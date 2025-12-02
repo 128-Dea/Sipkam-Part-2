@@ -112,12 +112,12 @@
                     </div>
 
                     <div class="border rounded-3 bg-white p-3">
-                        <p class="text-muted small fw-semibold mb-2">Riwayat Transaksi</p>
+                        <p class="text-muted small fw-semibold mb-2">riwayat Transaksi</p>
                         <div class="fw-semibold mb-1">
                             Peminjaman {{ $status }}.
                         </div>
                         <div class="text-muted">
-                            Riwayat perpanjangan: {{ $peminjaman->perpanjangan->count() }} kali. Keluhan: {{ $peminjaman->keluhan->count() }}.
+                            riwayat perpanjangan: {{ $peminjaman->perpanjangan->count() }} kali. Keluhan: {{ $peminjaman->keluhan->count() }}.
                         </div>
                         <div class="text-muted mt-2">
                             Alasan: {{ $peminjaman->alasan ?: '-' }}

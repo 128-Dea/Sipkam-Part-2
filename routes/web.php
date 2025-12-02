@@ -11,7 +11,7 @@ use App\Http\Controllers\KeluhanController;
 use App\Http\Controllers\PerpanjanganController;
 use App\Http\Controllers\NotifikasiController;
 use App\Http\Controllers\QrController;
-use App\Http\Controllers\RiwayatController;
+use App\Http\Controllers\riwayatController;
 use App\Http\Controllers\MahasiswaController;
 use App\Http\Controllers\PetugasController;
 
@@ -56,8 +56,9 @@ Route::middleware(['auth', 'role:mahasiswa'])
         Route::resource('perpanjangan', PerpanjanganController::class)->only(['index', 'create', 'store', 'update']);
         Route::resource('notifikasi', NotifikasiController::class)->only(['index', 'destroy']);
         Route::get('/qr/{id}', [QrController::class, 'show'])->name('qr.show');
-        Route::get('/riwayat', [RiwayatController::class, 'index'])->name('riwayat.index');
-        Route::get('/riwayat/{riwayat}', [RiwayatController::class, 'show'])->name('riwayat.show');
+        Route::get('/riwayat', [riwayatController::class, 'index'])->name('riwayat.index');
+        Route::get('/riwayat/{riwayat}', [riwayatController::class, 'show'])->name('riwayat.show');
+        Route::get('booking', [PeminjamanController::class, 'booking'])->name('booking.index');
 
         // Pengembalian oleh mahasiswa (create & store)
         Route::resource('pengembalian', PengembalianController::class)->only(['create', 'store']);
@@ -113,9 +114,9 @@ Route::get('pengembalian/{peminjaman}/konfirmasi', [PengembalianController::clas
         Route::post('keluhan/{keluhan}/service', [KeluhanController::class, 'kirimService'])->name('keluhan.service');
         Route::post('keluhan/{keluhan}/selesai', [KeluhanController::class, 'tandaiSelesai'])->name('keluhan.selesai');
         Route::resource('notifikasi', NotifikasiController::class)->only(['index', 'destroy']);
-        Route::get('riwayat-transaksi', [\App\Http\Controllers\RiwayatController::class, 'petugas'])->name('riwayat.index');
-        Route::get('riwayat-transaksi/export/csv', [\App\Http\Controllers\RiwayatController::class, 'exportCsv'])->name('riwayat.export.csv');
-        Route::get('riwayat-transaksi/export/html', [\App\Http\Controllers\RiwayatController::class, 'exportHtml'])->name('riwayat.export.html');
+        Route::get('riwayat-transaksi', [\App\Http\Controllers\riwayatController::class, 'petugas'])->name('riwayat.index');
+        Route::get('riwayat-transaksi/export/csv', [\App\Http\Controllers\riwayatController::class, 'exportCsv'])->name('riwayat.export.csv');
+        Route::get('riwayat-transaksi/export/html', [\App\Http\Controllers\riwayatController::class, 'exportHtml'])->name('riwayat.export.html');
     });
 
 

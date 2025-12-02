@@ -5,8 +5,8 @@
 {{-- ===== STYLE KHUSUS HALAMAN FORM KELUHAN ===== --}}
 <style>
     :root {
-        --sipkam-complaint-accent: #fbbf24;             /* kuning keluhan */
-        --sipkam-complaint-accent-soft: rgba(251,191,36,0.35);
+        --sipkam-complaint-accent: var(--primary-dark);
+        --sipkam-complaint-accent-soft: rgba(79,70,229,0.12);
     }
 
     /* Latar full screen, ikut tema global */
@@ -15,16 +15,33 @@
         margin: -24px -32px -40px -32px;   /* tarik keluar padding layout */
         padding: 24px 32px 40px;           /* tetap ada ruang dari tepi */
         display: block;                    /* biar wrapper full width */
-    }
-
-    body.sipkam-light .sipkam-complaint-form-page {
-        background: linear-gradient(135deg,#fef9c3 0%,#f9fafb 40%,#e0f2fe 100%);
+        background: linear-gradient(135deg, #d7f3f4 0%, #e8f2ff 40%, #dde9fb 100%);
+        background-size: 300% 300%;
+        animation: sipkamGradientLight 10s ease infinite;
         color: #0f172a;
     }
 
+    body.sipkam-light .sipkam-complaint-form-page {
+        background: var(--sipkam-bg-light, linear-gradient(135deg, #d7f3f4 0%, #e8f2ff 40%, #dde9fb 100%));
+    }
+
     body.sipkam-dark .sipkam-complaint-form-page {
-        background: radial-gradient(circle at top,#020617 0%,#020617 40%,#020617 100%);
+        background: var(--sipkam-bg-dark, radial-gradient(circle at top, #020617 0%, #020617 40%, #020617 100%));
+        background-size: 200% 200%;
+        animation: sipkamGradientDark 12s ease infinite;
         color: #e5e7eb;
+    }
+
+    @keyframes sipkamGradientLight {
+        0%   { background-position: 0% 0%; }
+        50%  { background-position: 100% 100%; }
+        100% { background-position: 0% 0%; }
+    }
+
+    @keyframes sipkamGradientDark {
+        0%   { background-position: 50% 0%; }
+        50%  { background-position: 50% 100%; }
+        100% { background-position: 50% 0%; }
     }
 
     .sipkam-complaint-form-shell {
@@ -99,21 +116,6 @@
         background: radial-gradient(circle at top left,#020617,#020617 55%,#020617 100%);
         border: 1px solid rgba(31,41,55,0.9);
         box-shadow: 0 26px 70px rgba(0,0,0,0.95);
-    }
-
-    /* Glow kuning di sisi kanan card */
-    .sipkam-complaint-card::before {
-        content: "";
-        position: absolute;
-        right: -80px;
-        top: -40px;
-        width: 260px;
-        height: 260px;
-        border-radius: 999px;
-        background: radial-gradient(circle at center,var(--sipkam-complaint-accent-soft),transparent 70%);
-        filter: blur(2px);
-        opacity: 0.9;
-        pointer-events: none;
     }
 
     .sipkam-complaint-card .card-body {
@@ -193,6 +195,23 @@
         font-weight: 500;
     }
 
+    .btn-complaint-primary {
+        background: linear-gradient(135deg, var(--primary-color) 0%, var(--primary-dark) 100%) !important;
+        border: none !important;
+        color: #ffffff !important;
+        box-shadow: 0 12px 30px rgba(79,70,229,0.25);
+        font-weight: 600;
+    }
+
+    .btn-complaint-primary:hover {
+        color: #ffffff !important;
+        filter: brightness(1.05);
+    }
+
+    body.sipkam-dark .btn-complaint-primary {
+        box-shadow: 0 12px 32px rgba(99,102,241,0.35);
+    }
+
     body.sipkam-dark .sipkam-complaint-card .btn-light {
         background: transparent;
         color: #e5e7eb;
@@ -238,13 +257,8 @@
 <div class="sipkam-complaint-form-page">
     <div class="sipkam-complaint-form-shell">
 
-        {{-- HEADER (judul + tombol back) --}}
+        {{-- HEADER (judul) --}}
         <div class="sipkam-complaint-form-header">
-            <button type="button"
-                    class="sipkam-complaint-form-back"
-                    onclick="window.history.back()">
-                <i class="fas fa-arrow-left"></i>
-            </button>
             <div>
                 <h1 class="sipkam-complaint-form-title h4 mb-0">
                     Form Keluhan Peminjaman
@@ -264,7 +278,7 @@
             <div class="card-body">
                 <div class="mb-3">
                     <label class="form-label">Pilih Peminjaman</label>
-                    <select name="id_peminjaman" class="form-select" {{ $peminjaman->isEmpty() ? 'disabled' : '' }} required>
+                    <select name="id_peminjaman" class="form-select" required>
                         <option value="">-- Pilih --</option>
                         @forelse($peminjaman as $item)
                             <option value="{{ $item->id_peminjaman }}" @selected(old('id_peminjaman')==$item->id_peminjaman)>
@@ -298,7 +312,7 @@
 
             <div class="card-footer text-end bg-white">
                 <a href="{{ route('mahasiswa.keluhan.index') }}" class="btn btn-light">Batal</a>
-                <button class="btn btn-warning" type="submit">Kirim Keluhan</button>
+                <button class="btn btn-complaint-primary" type="submit">Kirim Keluhan</button>
             </div>
         </form>
 

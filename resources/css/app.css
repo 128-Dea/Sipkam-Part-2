@@ -66,3 +66,61 @@ body[data-detail-context="keluhan"] {
     -webkit-backdrop-filter: blur(10px);
     opacity: 1 !important;
 }
+
+.btn-primary {
+    background: linear-gradient(135deg, #0B2B26, #8EB69B);
+    border-color: #0B2B26;
+    color: #ffffff;
+}
+
+.btn-primary:hover,
+.btn-primary:focus {
+    background: linear-gradient(135deg, #163832, #9AC8A0);
+    border-color: #163832;
+    color: #ffffff;
+}
+
+.btn-outline-primary {
+    color: #0B2B26;
+    border-color: #0B2B26;
+}
+
+.btn-outline-primary:hover {
+    background: rgba(14, 44, 38, 0.12);
+    color: #0B2B26;
+}
+
+:root {
+    --sipkam-petugas-deep-1: #051F20;
+    --sipkam-petugas-deep-2: #0B2B26;
+    --sipkam-petugas-deep-3: #163832;
+    --sipkam-petugas-soft-1: #8EB69B;
+    --sipkam-petugas-soft-2: #DAF1DE;
+    --sipkam-petugas-mid:    #E5F3E7;
+}
+
+body.petugas-theme {
+    background-image: linear-gradient(
+        180deg,
+        var(--sipkam-petugas-soft-2) 0%,
+        var(--sipkam-petugas-mid) 40%,
+        var(--sipkam-petugas-soft-1) 100%
+    );
+    background-repeat: no-repeat;
+    background-size: cover;
+    background-position: center;
+    background-attachment: fixed;
+}
+
+body.sipkam-dark.petugas-theme {
+    background-image: radial-gradient(
+        circle at top,
+        var(--sipkam-petugas-deep-1) 0%,
+        var(--sipkam-petugas-deep-2) 40%,
+        var(--sipkam-petugas-deep-3) 100%
+    );
+    background-repeat: no-repeat;
+    background-size: cover;
+    background-position: center;
+    background-attachment: fixed;
+}

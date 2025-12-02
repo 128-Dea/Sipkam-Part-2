@@ -17,16 +17,26 @@
 <style>
     :root {
         /* Light theme */
-        --sipkam-bg-light: linear-gradient(135deg, #d7f3f4 0%, #e8f2ff 40%, #dde9fb 100%);
+        --sipkam-bg-light: radial-gradient(
+            circle at 0% 0%,
+            #e5f3e8 0%,
+            #cdeee7 35%,
+            #99c5ab 100%
+        );
         --sipkam-card-light: rgba(255, 255, 255, 0.96);
-        --sipkam-text-dark: #0f172a;
-        --sipkam-text-muted: #64748b;
+        --sipkam-text-dark: #01140f;
+        --sipkam-text-muted: #2f4f41;
 
-        /* Dark theme (hitam + neon hijau) */
-        --sipkam-bg-dark: radial-gradient(circle at top, #020617 0%, #020617 40%, #020617 100%);
+        /* Dark theme (verde neon) */
+        --sipkam-bg-dark: radial-gradient(
+            circle at top,
+            #02130f 0%,
+            #05221c 40%,
+            #010e09 100%
+        );
         --sipkam-card-dark: #020617;
         --sipkam-text-dark-mode: #e5e7eb;
-        --sipkam-muted-dark: #9ca3af;
+        --sipkam-muted-dark: #91f7c1;
         --sipkam-accent-green: #22c55e;
         --sipkam-accent-pill: #bbf7d0;
     }
@@ -502,7 +512,7 @@
                     <div class="stat-overview mb-3">
                         <div class="item">
                             <div class="head">
-                                <span class="label">Riwayat selesai</span>
+                                <span class="label">riwayat selesai</span>
                                 <span class="icon text-success"><i class="fas fa-check-double"></i></span>
                             </div>
                             <span class="value text-success">{{ $riwayatSelesai }}</span>

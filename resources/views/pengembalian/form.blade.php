@@ -42,6 +42,7 @@
             </div>
         </div>
     </div>
+
     <div class="col-lg-8">
         <div class="card border-0 shadow-sm h-100">
             <div class="card-body">
@@ -67,6 +68,7 @@
 
                 <form method="POST" action="{{ route('petugas.pengembalian.prosesLengkap', $peminjaman->id_peminjaman) }}" enctype="multipart/form-data">
                     @csrf
+
                     <div class="row g-3">
                         <div class="col-md-6">
                             <label class="form-label form-label-modern">Kondisi Barang</label>
@@ -76,6 +78,7 @@
                                 <option value="hilang">🔴 Hilang</option>
                             </select>
                         </div>
+
                         <div class="col-md-6">
                             <label class="form-label form-label-modern">Waktu Pengembalian</label>
                             <input
@@ -90,19 +93,23 @@
                                 Terlambat: {{ $terlambatMenit }} menit (Rp {{ number_format($terlambatMenit * 1000, 0, ',', '.') }})
                             </small>
                         </div>
+
                         <div class="col-md-6" id="field-biaya-rusak" style="display:none;">
                             <label class="form-label form-label-modern">Biaya Denda Kerusakan</label>
                             <input type="number" name="biaya_rusak" id="biaya_rusak" min="0" class="form-control form-control-modern" placeholder="Contoh: 50000">
                             <small class="text-muted">Auto-saran: Rp <span id="suggest-rusak">0</span></small>
                         </div>
+
                         <div class="col-md-6" id="field-biaya-hilang" style="display:none;">
                             <label class="form-label form-label-modern">Denda Kehilangan</label>
                             <input type="number" name="biaya_hilang" id="biaya_hilang" min="0" class="form-control form-control-modern" placeholder="Contoh: 250000">
                         </div>
+
                         <div class="col-12" id="field-rincian-rusak" style="display:none;">
                             <label class="form-label form-label-modern">Rincian Kerusakan</label>
                             <textarea name="catatan" rows="3" class="form-control form-control-modern" placeholder="Deskripsikan kerusakan"></textarea>
                         </div>
+
                         <div class="col-12" id="field-foto-rusak" style="display:none;">
                             <label class="form-label form-label-modern">Upload Foto Kerusakan (opsional)</label>
                             <input type="file" name="foto_kerusakan" accept="image/*" class="form-control form-control-modern">
@@ -118,6 +125,9 @@
     </div>
 </div>
 
+{{-- ========================== --}}
+{{--  FIX DATE INPUT DEFAULT    --}}
+{{-- ========================== --}}
 <style>
     #waktu-pengembalian::-webkit-calendar-picker-indicator,
     #waktu-pengembalian::-webkit-inner-spin-button {
@@ -125,6 +135,38 @@
     }
     #waktu-pengembalian {
         caret-color: transparent;
+    }
+</style>
+
+{{-- ========================== --}}
+{{--  CSS FIX — AGAR TIDAK HIJAU --}}
+{{-- ========================== --}}
+<style>
+    select,
+    .form-select,
+    .form-control,
+    .form-control-modern {
+        background-color: #ffffff !important;
+        color: #0f172a !important;
+        border: 1px solid #cbd5e1 !important;
+    }
+
+    select option,
+    .form-select option {
+        background-color: #ffffff !important;
+        color: #0f172a !important;
+    }
+
+    select option:hover,
+    .form-select option:hover {
+        background-color: #e2e8f0 !important;
+        color: #0f172a !important;
+    }
+
+    select option:checked,
+    .form-select option:checked {
+        background-color: #e2e8f0 !important;
+        color: #0f172a !important;
     }
 </style>
 
@@ -141,7 +183,6 @@
         const latenessInfo = document.getElementById('lateness-info');
         const hargaBarang = Number('{{ $peminjaman->barang->harga ?? 0 }}');
 
-        // Saran denda berdasarkan kategori barang (kasar)
         const kategori = '{{ strtolower($peminjaman->barang->kategori->nama ?? '') }}';
         let saran = 50000;
         if (kategori.includes('elektronik')) saran = 150000;
@@ -192,15 +233,12 @@
         toggleFields();
 
         updateLateness();
-        // Segarkan keterlambatan per 5 detik
         setInterval(updateLateness, 5000);
 
-        // Rehitung jika user mengubah manual
         if (waktuInput) {
             waktuInput.addEventListener('input', updateLateness);
         }
 
-        // Pastikan saat submit, waktu terisi detik-ini
         const form = document.querySelector('form[action*="pengembalian"][method="POST"]');
         if (form) {
             form.addEventListener('submit', function() {
@@ -209,4 +247,5 @@
         }
     });
 </script>
+
 @endsection

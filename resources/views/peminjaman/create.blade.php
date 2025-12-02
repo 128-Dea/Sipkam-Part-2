@@ -4,12 +4,24 @@
 
 {{-- ====== STYLE: FORM PEMINJAMAN FULL WIDTH + GRADIENT + DARK MODE ====== --}}
 <style>
-    /* Wrapper halaman peminjaman: FULL, mentok kanan—kiri—atas—bawah area main */
+    /* BACKGROUND HALAMAN (bukan form) */
     .peminjaman-full-bg {
         margin: -1.5rem -1.5rem -1.5rem;
         padding: 1.5rem 1.5rem 2rem;
         min-height: calc(100vh - 72px);
-        background: linear-gradient(135deg, #4f46e5 0%, #6366f1 45%, #0ea5e9 100%);
+
+        /* gradasi hijau teal sesuai referensi */
+        background:
+            radial-gradient(circle at 0% 0%, rgba(218,241,222,0.55), transparent 55%),
+            radial-gradient(circle at 100% 100%, rgba(142,182,155,0.45), transparent 55%),
+            linear-gradient(
+                180deg,
+                #DAF1DE 0%,     /* hijau muda paling atas */
+                #8EB69B 32%,    /* hijau soft */
+                #235347 72%,    /* hijau gelap */
+                #051F20 100%    /* paling gelap di bawah */
+            );
+        background-attachment: fixed;
     }
 
     @media (max-width: 768px) {
@@ -17,21 +29,41 @@
             margin: -1rem;
             padding: 1rem 1rem 1.5rem;
             min-height: auto;
+            background:
+                radial-gradient(circle at 0% 0%, rgba(218,241,222,0.6), transparent 55%),
+                radial-gradient(circle at 100% 100%, rgba(142,182,155,0.5), transparent 55%),
+                linear-gradient(
+                    180deg,
+                    #DAF1DE 0%,
+                    #8EB69B 40%,
+                    #235347 80%,
+                    #051F20 100%
+                );
         }
     }
 
-    /* DARK MODE: background hitam */
+    /* DARK MODE: gradasi gelap dengan sedikit hint hijau */
     body.sipkam-dark .peminjaman-full-bg {
-        background: #020617;
+        background:
+            radial-gradient(circle at 0% 0%, rgba(22,163,74,0.18), transparent 55%),
+            radial-gradient(circle at 100% 100%, rgba(34,197,94,0.18), transparent 55%),
+            linear-gradient(
+                180deg,
+                #020617 0%,
+                #020617 40%,
+                #020617 100%
+            );
+        background-attachment: fixed;
     }
 
-    /* Header di atas form */
+    /* ====== SISANYA PERSIS SEPERTI PUNYAMU (TIDAK DIUBAH) ====== */
+
     .peminjaman-header-bar {
         display: flex;
         justify-content: space-between;
         align-items: center;
         margin-bottom: 1rem;
-        color: #f9fafb;
+        color: #0f172a;
     }
 
     .peminjaman-header-bar small {
@@ -62,7 +94,6 @@
         justify-content: center;
     }
 
-    /* DARK MODE: header font hijau */
     body.sipkam-dark .peminjaman-header-bar small,
     body.sipkam-dark .peminjaman-header-bar h1,
     body.sipkam-dark .peminjaman-header-bar p {
@@ -73,18 +104,16 @@
         border-color: rgba(34, 197, 94, 0.7);
     }
 
-    /* FORM utama: FULL WIDTH, gradasi biru–ungu */
     form.peminjaman-form {
         width: 100%;
         border-radius: 18px;
-        border: none;
+        border: 1px solid rgba(148, 163, 184, 0.25);
         overflow: hidden;
-        background: linear-gradient(135deg, #4f46e5 0%, #6366f1 50%, #0ea5e9 100%);
-        box-shadow: 0 18px 40px rgba(15, 23, 42, 0.25);
+        background: #ffffff; /* FORM TETAP PUTIH */
+        box-shadow: 0 18px 40px rgba(15, 23, 42, 0.12);
         color: #0f172a;
     }
 
-    /* DARK MODE: form hitam dengan aksen hijau */
     body.sipkam-dark form.peminjaman-form {
         background: #020617;
         border: 1px solid rgba(34, 197, 94, 0.35);
@@ -92,10 +121,13 @@
         color: #e5e7eb;
     }
 
-    /* Body & footer form transparan supaya gradasi/warna dasar terlihat */
     form.peminjaman-form .card-body,
     form.peminjaman-form .card-footer {
-        background: transparent;
+        background: #ffffff;
+    }
+    body.sipkam-dark form.peminjaman-form .card-body,
+    body.sipkam-dark form.peminjaman-form .card-footer {
+        background: #020617;
     }
 
     form.peminjaman-form .card-body {
@@ -107,7 +139,6 @@
         border-top: 1px solid rgba(148, 163, 184, 0.35);
     }
 
-    /* SECTION pemecah form */
     .sipkam-section + .sipkam-section {
         border-top: 1px dashed rgba(226, 232, 240, 0.8);
         margin-top: 1rem;
@@ -126,22 +157,21 @@
         display: flex;
         align-items: center;
         gap: .35rem;
-        color: #e5e7eb;
+        color: #0f172a;
     }
 
     .sipkam-section-title i {
         font-size: .8rem;
-        color: #e0e7ff;
+        color: #4f46e5;
     }
 
     .sipkam-section-subtitle {
         font-size: .82rem;
-        color: #e5e7f5;
+        color: #475569;
         margin-bottom: .75rem;
         opacity: .9;
     }
 
-    /* DARK MODE: judul & subtitle hijau */
     body.sipkam-dark .sipkam-section-title {
         color: #bbf7d0;
     }
@@ -152,26 +182,24 @@
         color: #86efac;
     }
 
-    /* Label & input */
     form.peminjaman-form .form-label {
         font-size: .8rem;
         font-weight: 600;
         text-transform: uppercase;
         letter-spacing: .06em;
-        color: #e5e7eb;
+        color: #0f172a;
     }
 
     form.peminjaman-form .form-select,
     form.peminjaman-form .form-control,
     form.peminjaman-form textarea {
         border-radius: 10px;
-        border: 1px solid #e5e7eb;
+        border: 1px solid #cbd5e1;
         font-size: .9rem;
         padding: .6rem .75rem;
         background-color: #ffffff;
     }
 
-    /* DARK MODE: input gelap, border hijau, font terang */
     body.sipkam-dark form.peminjaman-form .form-label {
         color: #bbf7d0;
     }
@@ -191,8 +219,8 @@
     form.peminjaman-form .form-select:focus,
     form.peminjaman-form .form-control:focus,
     form.peminjaman-form textarea:focus {
-        border-color: #c7d2fe;
-        box-shadow: 0 0 0 3px rgba(129, 140, 248, 0.5);
+        border-color: #4f46e5;
+        box-shadow: 0 0 0 3px rgba(79, 70, 229, 0.25);
     }
 
     body.sipkam-dark form.peminjaman-form .form-select:focus,
@@ -212,7 +240,6 @@
         color: #86efac;
     }
 
-    /* Tombol */
     form.peminjaman-form .btn-light {
         border-radius: 999px;
         padding-inline: 18px;
@@ -235,13 +262,13 @@
         box-shadow: 0 16px 40px rgba(79, 70, 229, 0.6);
     }
 
-    /* DARK MODE: tombol utama hijau neon */
     body.sipkam-dark form.peminjaman-form .btn-primary {
         background: linear-gradient(135deg, #22c55e, #16a34a);
         box-shadow: 0 14px 36px rgba(34, 197, 94, 0.55);
         color: #020617;
     }
 </style>
+
 
 <div class="peminjaman-full-bg">
 

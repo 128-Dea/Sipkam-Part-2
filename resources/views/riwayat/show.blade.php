@@ -22,8 +22,8 @@
                 <div class="card-body p-4 p-md-5" style="max-height: calc(100vh - 120px); overflow-y: auto;">
                     <div class="d-flex justify-content-between align-items-start mb-4">
                         <div>
-                            <h2 class="h4 mb-1">Detail Riwayat</h2>
-                            <small class="text-muted">Riwayat #{{ $riwayat->id_riwayat }}</small>
+                            <h2 class="h4 mb-1">Detail riwayat</h2>
+                            <small class="text-muted">riwayat #{{ $riwayat->id_riwayat }}</small>
                         </div>
                         <a href="{{ route('mahasiswa.riwayat.index') }}" class="btn btn-outline-secondary btn-sm">Tutup</a>
                     </div>
