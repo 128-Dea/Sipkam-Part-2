@@ -9,19 +9,7 @@
         margin: -1.5rem -1.5rem -1.5rem;
         padding: 1.5rem 1.5rem 2rem;
         min-height: calc(100vh - 72px);
-
-        /* gradasi hijau teal sesuai referensi */
-        background:
-            radial-gradient(circle at 0% 0%, rgba(218,241,222,0.55), transparent 55%),
-            radial-gradient(circle at 100% 100%, rgba(142,182,155,0.45), transparent 55%),
-            linear-gradient(
-                180deg,
-                #DAF1DE 0%,     /* hijau muda paling atas */
-                #8EB69B 32%,    /* hijau soft */
-                #235347 72%,    /* hijau gelap */
-                #051F20 100%    /* paling gelap di bawah */
-            );
-        background-attachment: fixed;
+        background: #ffffff;
     }
 
     @media (max-width: 768px) {
@@ -29,31 +17,13 @@
             margin: -1rem;
             padding: 1rem 1rem 1.5rem;
             min-height: auto;
-            background:
-                radial-gradient(circle at 0% 0%, rgba(218,241,222,0.6), transparent 55%),
-                radial-gradient(circle at 100% 100%, rgba(142,182,155,0.5), transparent 55%),
-                linear-gradient(
-                    180deg,
-                    #DAF1DE 0%,
-                    #8EB69B 40%,
-                    #235347 80%,
-                    #051F20 100%
-                );
+            background: #ffffff;
         }
     }
 
     /* DARK MODE: gradasi gelap dengan sedikit hint hijau */
     body.sipkam-dark .peminjaman-full-bg {
-        background:
-            radial-gradient(circle at 0% 0%, rgba(22,163,74,0.18), transparent 55%),
-            radial-gradient(circle at 100% 100%, rgba(34,197,94,0.18), transparent 55%),
-            linear-gradient(
-                180deg,
-                #020617 0%,
-                #020617 40%,
-                #020617 100%
-            );
-        background-attachment: fixed;
+        background: #0b1224;
     }
 
     /* ====== SISANYA PERSIS SEPERTI PUNYAMU (TIDAK DIUBAH) ====== */
@@ -219,8 +189,8 @@
     form.peminjaman-form .form-select:focus,
     form.peminjaman-form .form-control:focus,
     form.peminjaman-form textarea:focus {
-        border-color: #4f46e5;
-        box-shadow: 0 0 0 3px rgba(79, 70, 229, 0.25);
+        border-color: #16a34a;
+        box-shadow: 0 0 0 3px rgba(22, 163, 74, 0.25);
     }
 
     body.sipkam-dark form.peminjaman-form .form-select:focus,
@@ -248,18 +218,18 @@
     form.peminjaman-form .btn-primary {
         border-radius: 999px;
         padding-inline: 22px;
-        background: linear-gradient(135deg, #4f46e5, #6366f1);
-        border-color: transparent;
+        background: linear-gradient(135deg, #16a34a, #15803d);
+        border-color: #15803d;
         font-weight: 600;
         display: inline-flex;
         align-items: center;
         gap: 6px;
-        box-shadow: 0 12px 30px rgba(79, 70, 229, 0.4);
+        box-shadow: 0 12px 30px rgba(22, 163, 74, 0.4);
     }
 
     form.peminjaman-form .btn-primary:hover {
         transform: translateY(-1px);
-        box-shadow: 0 16px 40px rgba(79, 70, 229, 0.6);
+        box-shadow: 0 16px 40px rgba(22, 163, 74, 0.5);
     }
 
     body.sipkam-dark form.peminjaman-form .btn-primary {

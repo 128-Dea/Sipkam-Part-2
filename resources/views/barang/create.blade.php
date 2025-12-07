@@ -10,19 +10,13 @@
         --inv-light:  #DAF1DE;
     }
 
-    /* ====== BACKGROUND HALAMAN (LUAR FORM) GRADIENT VERTIKAL ====== */
+    /* ====== BACKGROUND HALAMAN (LUAR FORM) PUTIH ====== */
     body {
-        background: linear-gradient(
-            180deg,
-            var(--inv-deep-1) 0%,
-            var(--inv-deep-3) 35%,
-            var(--inv-soft)   75%,
-            var(--inv-light)  100%
-        ) !important;
+        background: #ffffff !important;
     }
 
     main.py-4 {
-        background: transparent !important;
+        background: #ffffff !important;
         padding-top: 1.75rem;
         padding-bottom: 2.5rem;
         min-height: 100vh;

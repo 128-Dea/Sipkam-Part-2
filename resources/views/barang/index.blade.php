@@ -383,10 +383,10 @@
                                     </span>
                                 </td>
 
-                                {{-- STOK TOTAL --}}
-                                <td class="text-center">
-                                    {{ $item->stok ?? 0 }}
-                                </td>
+                        {{-- STOK TOTAL --}}
+                        <td class="text-center">
+                            {{ $item->stok_total }}
+                        </td>
 
                                 {{-- DIPINJAM --}}
                                 <td class="text-center">

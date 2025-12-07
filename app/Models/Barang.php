@@ -32,6 +32,7 @@ class Barang extends Model
 
     protected $appends = [
         'foto_url',
+        'stok_total',
         'stok_tersedia',
         'stok_dipinjam',
         'stok_service',
@@ -72,12 +73,22 @@ class Barang extends Model
     // ====== ACCESSOR STOK BERDASARKAN TRANSAKSI ======
 
     
-    // Banyak unit yang sedang dipinjam (status peminjaman = 'dipinjam').
+    // Banyak unit yang sedang dipinjam (status peminjaman aktif).
     public function getStokDipinjamAttribute(): int
     {
         return (int) $this->peminjaman()
-            ->where('status', 'dipinjam')             
+            ->whereIn('status', ['berlangsung', 'dipinjam'])
             ->count();                       
+    }
+
+    // Stok total riil = stok tersimpan + yang sedang dipinjam + yang sedang diservice.
+    public function getStokTotalAttribute(): int
+    {
+        $dasar    = (int) ($this->stok ?? 0);
+        $dipinjam = $this->stok_dipinjam;
+        $service  = $this->stok_service;
+
+        return $dasar + $dipinjam + $service;
     }
 
     // Banyak unit yang sedang dalam service (status service belum selesai).
@@ -94,7 +105,7 @@ class Barang extends Model
     // Stok yang masih benar-benar tersedia sekarang.
     public function getStokTersediaAttribute(): int
     {
-        $total    = (int) ($this->stok ?? 0);
+        $total    = $this->stok_total;
         $dipinjam = $this->stok_dipinjam;
         $service  = $this->stok_service;
 

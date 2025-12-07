@@ -20,6 +20,7 @@
         justify-content: center;
         align-items: flex-start;
         font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+        background: #f5f6f8;
     }
 
     .denda-inner {
@@ -90,8 +91,8 @@
         margin-top: 16px;
         border-radius: 0 0 18px 18px;
         border: none;
-        background: rgba(250,253,252,0.97);
-        box-shadow: 0 20px 40px rgba(0,0,0,0.45);
+        background: #ffffff;
+        box-shadow: 0 18px 40px rgba(15,23,42,0.16);
         overflow: hidden;
     }
 
@@ -100,7 +101,7 @@
     }
 
     .denda-table-card thead.table-light {
-        background-color: var(--denda-dark-2) !important;
+        background-color: #0f332e !important;
     }
 
     .denda-table-card thead.table-light th {
@@ -115,21 +116,76 @@
 
     .denda-table-card tbody td {
         font-size: 0.9rem;
-        color: var(--denda-dark-3);
+        color: #0f172a;
         border-color: #e1ebe4;
         vertical-align: middle;
     }
 
+    .denda-table-card tbody tr {
+        border-bottom: 1px solid #e1ebe4;
+    }
+
     .denda-table-card tbody tr:nth-child(even) {
-        background-color: #f6fbf8;
+        background-color: #ffffff;
     }
 
     .denda-table-card tbody tr:hover {
-        background-color: #e9f3ee;
+        background-color: #f7f9fb;
     }
 
     .denda-table-card .text-muted {
         color: rgba(71,85,105,0.8) !important;
+    }
+
+    .denda-table-card .table > :not(caption) > * > * {
+        padding-top: 0.8rem;
+        padding-bottom: 0.8rem;
+    }
+
+    .denda-table-card thead th {
+        text-align: left;
+    }
+
+    .col-aksi {
+        width: 200px;
+        text-align: center;
+    }
+
+    .col-id {
+        width: 60px;
+    }
+
+    /* AKSI BUTTON GROUP */
+    .denda-actions {
+        display: flex;
+        gap: 8px;
+        align-items: center;
+        justify-content: center;
+        flex-wrap: wrap;
+    }
+
+    .denda-actions .denda-btn {
+        border-radius: 10px;
+        padding: 0.45rem 0.8rem;
+        font-weight: 600;
+        font-size: 0.88rem;
+    }
+
+    .denda-bukti-btn {
+        padding: 0.4rem 0.7rem;
+        font-size: 0.85rem;
+        border-radius: 8px;
+    }
+
+    @media (max-width: 575.98px) {
+        .denda-actions {
+            flex-direction: column;
+            align-items: stretch;
+        }
+
+        .denda-actions .denda-btn {
+            width: 100%;
+        }
     }
 </style>
 
@@ -160,14 +216,15 @@
                 <table class="table mb-0 align-middle">
                     <thead class="table-light">
                         <tr>
-                            <th style="width:60px;">ID</th>
-                            <th>Pengguna & Barang</th>
-                            <th>Jenis</th>
-                            <th>Nominal</th>
-                            <th>Metode</th>
-                            <th>Status</th>
-                            <th>Bukti Transfer</th>
-                            <th style="width:180px;">Aksi</th>
+                            <th style="width:60px;" class="text-uppercase small fw-semibold">ID</th>
+                            <th class="text-uppercase small fw-semibold">Pengguna & Barang</th>
+                            <th class="text-uppercase small fw-semibold">Jenis</th>
+                            <th class="text-uppercase small fw-semibold">Nominal</th>
+                            <th class="text-uppercase small fw-semibold">Keterangan</th>
+                            <th class="text-uppercase small fw-semibold">Metode</th>
+                            <th class="text-uppercase small fw-semibold">Status</th>
+                            <th class="text-uppercase small fw-semibold">Bukti Transfer</th>
+                            <th class="text-uppercase small fw-semibold text-center" style="width:200px;">Aksi</th>
                         </tr>
                     </thead>
                     <tbody>
@@ -203,11 +260,11 @@
                                 </td>
 
                                 {{-- NOMINAL --}}
-                                <td>
+                                <td class="text-nowrap">
                                     Rp {{ number_format($total, 0, ',', '.') }}
                                 </td>
 
-                                {{-- DETAIL NOMINAL --}}
+                                {{-- KETERANGAN --}}
                                 <td class="small">
                                     @if($jenis === 'terlambat')
                                         @php
@@ -250,23 +307,23 @@
                                 </td>
 
                                 {{-- BUKTI TRANSFER --}}
-                                <td class="small">
+                                <td class="small text-center">
                                     @if($item->bukti_transfer_url)
                                         <a href="{{ $item->bukti_transfer_url }}"
                                            target="_blank"
-                                           class="text-decoration-none">
-                                            Lihat bukti
+                                           class="btn btn-outline-primary btn-sm denda-bukti-btn">
+                                            Lihat Bukti Transfer
                                         </a>
                                     @else
-                                        <span class="text-muted">-</span>
+                                        <span class="text-muted">Belum ada bukti transfer</span>
                                     @endif
                                 </td>
 
                                 {{-- AKSI --}}
-                                <td>
-                                    <div class="d-flex flex-column gap-1">
+                                <td class="text-center">
+                                    <div class="denda-actions">
                                         <a href="{{ route('petugas.denda.edit', $item->id_denda) }}"
-                                           class="btn btn-sm btn-outline-primary">
+                                           class="btn btn-sm btn-outline-primary denda-btn">
                                             Detail & Pembayaran
                                         </a>
 
@@ -278,7 +335,7 @@
                                                 @method('PUT')
                                                 <input type="hidden" name="status_pembayaran" value="sudah">
                                                 <input type="hidden" name="metode_pembayaran" value="cash">
-                                                <button class="btn btn-sm btn-success w-100"
+                                                <button class="btn btn-sm btn-success denda-btn"
                                                         onclick="return confirm('Tandai denda ini sebagai lunas (cash)?')">
                                                     Verifikasi Lunas (Cash)
                                                 </button>

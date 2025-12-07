@@ -20,14 +20,15 @@ class PerpanjanganController extends Controller
     public function create()
     {
         $authPenggunaId = $this->resolveAuthPenggunaId();
+        $prefillId = request('id_peminjaman');
 
         $peminjaman = Peminjaman::with(['pengguna', 'barang'])
             ->where('id_pengguna', $authPenggunaId)
-            ->whereIn('status', ['berlangsung', 'booking'])
+            ->where('status', 'berlangsung')
             ->whereDoesntHave('pengembalian')
             ->get();
 
-        return view('perpanjangan.create', compact('peminjaman'));
+        return view('perpanjangan.create', compact('peminjaman', 'prefillId'));
     }
 
     public function store(Request $request)
@@ -44,6 +45,11 @@ class PerpanjanganController extends Controller
         // Pastikan hanya pemilik peminjaman yang bisa mengajukan perpanjangan
         if ($peminjaman->id_pengguna !== $this->resolveAuthPenggunaId()) {
             return back()->withErrors(['id_peminjaman' => 'Anda tidak memiliki akses untuk memperpanjang peminjaman ini.']);
+        }
+
+        // Hanya peminjaman yang sudah berjalan yang boleh diperpanjang
+        if ($peminjaman->status !== 'berlangsung') {
+            return back()->withErrors(['id_peminjaman' => 'Perpanjangan hanya bisa untuk peminjaman yang sedang berlangsung.']);
         }
 
         $requestedEnd = Carbon::parse($data['waktu_perpanjangan']);

@@ -813,11 +813,17 @@
                                     <span class="badge bg-{{ $badge }}">{{ ucfirst($status) }}</span>
                                 </td>
                                 <td class="text-center">
-                                    <div class="d-flex justify-content-center gap-2">
+                                    <div class="d-flex flex-column flex-md-row justify-content-center gap-2">
                                         <a href="{{ route('mahasiswa.peminjaman.show', $item->id_peminjaman) }}"
                                            class="btn btn-sm btn-outline-success">
                                             Detail
                                         </a>
+                                        @if($status === 'berlangsung')
+                                            <a href="{{ route('mahasiswa.perpanjangan.create', ['id_peminjaman' => $item->id_peminjaman]) }}"
+                                               class="btn btn-sm btn-primary">
+                                                Ajukan Perpanjangan
+                                            </a>
+                                        @endif
                                         @if($status === 'booking')
                                             <form method="POST"
                                                   action="{{ route('mahasiswa.peminjaman.cancel', $item->id_peminjaman) }}"

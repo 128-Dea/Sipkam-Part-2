@@ -73,8 +73,8 @@ Route::middleware(['auth', 'role:petugas'])
     ->group(function () {
         Route::get('/dashboard', [PetugasController::class, 'dashboard'])->name('dashboard');
 
-        // Resource barang untuk petugas (tanpa index & show)
-        Route::resource('barang', BarangController::class)->except(['index', 'show']);
+        // Resource barang untuk petugas (tanpa index; detail pakai show bawaan)
+        Route::resource('barang', BarangController::class)->except(['index']);
 
         // Manajemen stok cepat untuk petugas
         Route::patch('barang/{barang}/stok/tambah', [BarangController::class, 'stokTambah'])

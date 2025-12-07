@@ -17,13 +17,7 @@
         margin: -24px -32px -24px -32px;
         padding: 32px 32px 48px;
         min-height: calc(100vh - 64px);
-        background: linear-gradient(
-            180deg,
-            var(--kat-dark-1) 0%,
-            var(--kat-dark-3) 30%,
-            var(--kat-soft)   70%,
-            var(--kat-light)  100%
-        );
+        background: #ffffff;
         display: flex;
         justify-content: center;
         align-items: flex-start;

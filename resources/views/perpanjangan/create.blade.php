@@ -35,7 +35,10 @@
                         value="{{ $item->id_peminjaman }}"
                         data-end="{{ \Carbon\Carbon::parse($item->waktu_akhir)->format('Y-m-d\TH:i') }}"
                         data-end-display="{{ \Carbon\Carbon::parse($item->waktu_akhir)->translatedFormat('d M Y H:i') }}"
-                        @selected(old('id_peminjaman')==$item->id_peminjaman)
+                        @php
+                            $defaultSelected = old('id_peminjaman', $prefillId ?? null);
+                        @endphp
+                        @selected($defaultSelected==$item->id_peminjaman)
                     >
                         {{ $item->barang->nama_barang ?? 'Barang' }} - {{ $item->pengguna->nama ?? 'Pengguna' }}
                     </option>
