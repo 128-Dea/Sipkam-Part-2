@@ -39,10 +39,15 @@ class PetugasController extends Controller
         $isPreset   = array_key_exists($rangeParam, $rangePreset);
         $chartRange = $isPreset || $rangeParam === 'semua' ? $rangeParam : '7hari';
 
-        $now       = Carbon::now();
-        $startDate = $now->copy()->subDays(($rangePreset[$chartRange] ?? 7) - 1)->startOfDay();
+        $now = Carbon::now();
 
+        // Pengaturan default (harian)
+        $startDate = $now->copy()->subDays(($rangePreset[$chartRange] ?? 7) - 1)->startOfDay();
+        $aggregateByMonth = false;
+
+        // "Semua": agregasi bulanan mulai dari transaksi pertama (fallback 12 bulan ke belakang)
         if ($chartRange === 'semua') {
+            $aggregateByMonth = true;
             $earliestPeminjaman   = Peminjaman::min('waktu_awal');
             $earliestPengembalian = Pengembalian::min('waktu_pengembalian');
 
@@ -51,7 +56,9 @@ class PetugasController extends Controller
                 ->map(fn ($tanggal) => Carbon::parse($tanggal))
                 ->min();
 
-            $startDate = ($earliestDate?->copy() ?? $now->copy()->subDays(6))->startOfDay();
+            $startDate = $earliestDate
+                ? $earliestDate->copy()->startOfMonth()
+                : $now->copy()->subMonths(11)->startOfMonth();
         }
 
         $endDate = $now->copy()->endOfDay();
@@ -62,22 +69,27 @@ class PetugasController extends Controller
         $chartPengembalian  = [];
         $chartKetersediaan  = [];
 
-        $peminjamanPerHari = Peminjaman::whereBetween('waktu_awal', [$startDate, $endDate])
+        $groupKeyFormat = $aggregateByMonth ? 'Y-m' : 'Y-m-d';
+        $labelFormat    = $aggregateByMonth ? 'M/Y' : 'd/m';
+        $periodStep     = $aggregateByMonth ? '1 month' : '1 day';
+
+        $peminjamanPerPeriode = Peminjaman::whereBetween('waktu_awal', [$startDate, $endDate])
             ->get()
-            ->groupBy(fn ($item) => Carbon::parse($item->waktu_awal)->toDateString())
+            ->groupBy(fn ($item) => Carbon::parse($item->waktu_awal)->format($groupKeyFormat))
             ->map->count();
 
-        $pengembalianPerHari = Pengembalian::whereBetween('waktu_pengembalian', [$startDate, $endDate])
+        $pengembalianPerPeriode = Pengembalian::whereBetween('waktu_pengembalian', [$startDate, $endDate])
             ->get()
-            ->groupBy(fn ($item) => Carbon::parse($item->waktu_pengembalian)->toDateString())
+            ->groupBy(fn ($item) => Carbon::parse($item->waktu_pengembalian)->format($groupKeyFormat))
             ->map->count();
 
-        foreach (CarbonPeriod::create($startDate, '1 day', $endDate) as $tanggal) {
-            $label = $tanggal->format('d/m');
+        foreach (CarbonPeriod::create($startDate, $periodStep, $endDate) as $tanggal) {
+            $key   = $tanggal->format($groupKeyFormat);
+            $label = $tanggal->format($labelFormat);
 
             $chartLabels[]       = $label;
-            $chartPeminjaman[]   = $peminjamanPerHari[$tanggal->toDateString()] ?? 0;
-            $chartPengembalian[] = $pengembalianPerHari[$tanggal->toDateString()] ?? 0;
+            $chartPeminjaman[]   = $peminjamanPerPeriode[$key] ?? 0;
+            $chartPengembalian[] = $pengembalianPerPeriode[$key] ?? 0;
             $chartKetersediaan[] = $barangTersedia;
         }
 
