@@ -300,7 +300,7 @@
         <div class="card sipkam-card-inventory border-0">
             <div class="card-header border-0 pb-0 sipkam-filter-header">
                 <form method="GET" action="{{ route('barang.index') }}" class="row g-2 align-items-center">
-                    <div class="col-md-4">
+                    <div class="col-md-7">
                         <div class="input-group input-group-sm">
                             <span class="input-group-text">
                                 <i class="fas fa-search text-muted"></i>
@@ -311,16 +311,6 @@
                                    placeholder="Cari nama / kode barang"
                                    value="{{ request('q') }}">
                         </div>
-                    </div>
-
-                    <div class="col-md-3">
-                        @php $selectedStatus = request('status'); @endphp
-                        <select name="status" class="form-select form-select-sm">
-                            <option value="">Semua status</option>
-                            <option value="tersedia" @selected($selectedStatus === 'tersedia')>Tersedia</option>
-                            <option value="dipinjam" @selected($selectedStatus === 'dipinjam')>Sedang dipinjam</option>
-                            <option value="dalam_service" @selected($selectedStatus === 'dalam_service')>Sedang service</option>
-                        </select>
                     </div>
 
                     <div class="col-md-2">
@@ -346,7 +336,6 @@
                             <th class="text-center">Dipinjam</th>
                             <th class="text-center">Service</th>
                             <th class="text-center">Tersedia</th>
-                            <th class="text-center">Status</th>
                             <th class="text-end" style="width:220px;">Aksi</th>
                         </tr>
                     </thead>
@@ -383,10 +372,10 @@
                                     </span>
                                 </td>
 
-                        {{-- STOK TOTAL --}}
-                        <td class="text-center">
-                            {{ $item->stok_total }}
-                        </td>
+                                {{-- STOK TOTAL --}}
+                                <td class="text-center">
+                                    {{ $item->stok_total }}
+                                </td>
 
                                 {{-- DIPINJAM --}}
                                 <td class="text-center">
@@ -401,23 +390,6 @@
                                 {{-- STOK TERSEDIA --}}
                                 <td class="text-center fw-semibold">
                                     {{ $item->stok_tersedia }}
-                                </td>
-
-                                {{-- STATUS OTOMATIS --}}
-                                <td class="text-center">
-                                    @php $status = $item->status_otomatis; @endphp
-
-                                    @if($status === 'tersedia')
-                                        <span class="badge bg-success">Tersedia</span>
-                                    @elseif($status === 'dipinjam')
-                                        <span class="badge bg-warning text-dark">Sedang Dipinjam</span>
-                                    @elseif($status === 'dalam_service')
-                                        <span class="badge bg-info text-dark">Sedang Service</span>
-                                    @elseif($status === 'habis')
-                                        <span class="badge bg-secondary">Stok Habis</span>
-                                    @else
-                                        <span class="badge bg-danger">{{ ucfirst($status) }}</span>
-                                    @endif
                                 </td>
 
                                 {{-- AKSI --}}
@@ -473,7 +445,7 @@
                             </tr>
                         @empty
                             <tr>
-                                <td colspan="9" class="text-center text-muted py-4">
+                                <td colspan="8" class="text-center text-muted py-4">
                                     <i class="fas fa-box-open me-2"></i>
                                     Belum ada barang.
                                 </td>
@@ -674,23 +646,7 @@
                                 <span class="d-block text-muted">
                                     Stok tersedia:
                                     <span class="fw-semibold">{{ $item->stok_tersedia }}</span>
-                                </span>
-                                <span class="d-block">
-                                    Status:
-                                    @php $statusUser = $item->status_otomatis; @endphp
-
-                                    @if($statusUser === 'tersedia')
-                                        <span class="badge bg-success">Tersedia</span>
-                                    @elseif($statusUser === 'dipinjam')
-                                        <span class="badge bg-warning text-dark">Sedang Dipinjam</span>
-                                    @elseif($statusUser === 'dalam_service')
-                                        <span class="badge bg-info text-dark">Sedang Service</span>
-                                    @elseif($statusUser === 'habis')
-                                        <span class="badge bg-secondary">Stok Habis</span>
-                                    @else
-                                        <span class="badge bg-danger">{{ ucfirst($statusUser) }}</span>
-                                    @endif
-                                </span>
+                                
                             </p>
 
                             <div class="mt-auto">

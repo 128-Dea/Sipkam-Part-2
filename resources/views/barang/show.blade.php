@@ -51,27 +51,6 @@
                                 @endif
                             </td>
                         </tr>
-                        <tr>
-                            <th>Status Sistem</th>
-                            <td>
-                                @php $status = $barang->status_otomatis; @endphp
-                                @if($status === 'tersedia')
-                                    <span class="badge bg-success">Tersedia</span>
-                                @elseif($status === 'dipinjam')
-                                    <span class="badge bg-warning text-dark">Sedang Dipinjam</span>
-                                @elseif($status === 'dalam_service')
-                                    <span class="badge bg-info text-dark">Sedang Service</span>
-                                @elseif($status === 'habis')
-                                    <span class="badge bg-secondary">Stok Habis</span>
-                                @else
-                                    <span class="badge bg-danger">{{ ucfirst($status) }}</span>
-                                @endif
-                            </td>
-                        </tr>
-                        <tr>
-                            <th>Status Manual (DB)</th>
-                            <td>{{ $barang->status ?? '-' }}</td>
-                        </tr>
                     </table>
                 </div>
             </div>
